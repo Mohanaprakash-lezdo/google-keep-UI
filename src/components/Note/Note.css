@@ -1,0 +1,34 @@
+.note{
+    background: rgb(234, 220, 220);
+    border-radius: 10px;
+    margin:16px;
+    padding:10px;
+    float:left;
+    width:200px;
+    box-shadow: 0 5px 5px rgb(203, 187, 187);
+}
+
+.note h1{
+    font-size: 1.1em;
+    margin-bottom: 6px;
+
+}
+
+.note span{
+    font-size: 1.1em;
+    margin-bottom: 10px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.note button{
+    position: relative;
+    float:right;
+    margin-right: 10px;
+    color:cadetblue;
+    border:none;
+    width:36px;
+    height:36px;
+    cursor:pointer;
+    outline:none
+}
