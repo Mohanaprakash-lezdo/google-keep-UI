@@ -54,7 +54,8 @@ const Createnote = (props) => {
   console.log(note);
 
   return (
-    <div >
+    <div className="create-note-container">
+      
       <form className="create-note" ref={formRef}>
         {isexpanded && (
           <input
@@ -76,12 +77,13 @@ const Createnote = (props) => {
         />
 
         <Zoom in={isexpanded}>
-          <Fab onClick={submitNote}>
+          <Fab onClick={submitNote} className="add-button">
             <AddIcon />
           </Fab>
         </Zoom>
       </form>
-    </div>
+      </div>
+   
   );
 };
 

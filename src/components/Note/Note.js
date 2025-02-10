@@ -10,7 +10,7 @@ const Note = (props) => {
     <div className='note'>
       <h2>{props.title}</h2>
       <span>{props.content}</span>
-      <button onclick={handleClick}>
+      <button onClick={handleClick}>
         <DeleteIcon/>
 
       </button>

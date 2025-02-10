@@ -3,33 +3,16 @@ import LightbulbIcon from "@mui/icons-material/Lightbulb";
 import "./Header.css";
 
 
-// const Header = () => {
-//   return (
-//     <header>
-//       <div className="header-content">
-//         <h1>
-//           <LightbulbIcon sx={{ color: "yellow" }} />
-//           Keep
-//         </h1>
-
-//       </div>
-
-//       <hr />
-//     </header>
-//   );
-// };
-
 const Header = () => {
     return (
       <header className="header">
-        <div className="header-content">
+          <div className="header-content">
           <h1>
             <LightbulbIcon className="icon" />
             Keep
           </h1>
           <input type="text" placeholder="Search..." />
-        </div>
-
+          </div>
       </header>
     );
   };

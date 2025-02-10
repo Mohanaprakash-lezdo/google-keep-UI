@@ -25,10 +25,14 @@
     position: relative;
     float:right;
     margin-right: 10px;
-    color:cadetblue;
+    color:rgb(12, 12, 12);
     border:none;
     width:36px;
     height:36px;
     cursor:pointer;
     outline:none
 }
+
+.note button:hover{
+    color:red
+} 

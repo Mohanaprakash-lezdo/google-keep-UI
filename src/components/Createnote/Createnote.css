@@ -1,35 +1,45 @@
-.create-note{
-    position:relative;
-    width:480px;
-    margin:30px auto 20px auto ;
-    background: #fff;
-    padding: 10px;
-    border-radius: 7px;
-    box-shadow: 0 5px 5px rgb(203, 187, 187);
+.create-note-container{
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
+
+.create-note{
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    width:480px;
+    margin:30px auto 20px auto;
+    background-color: #fff; 
+    padding: 15px;
+    border-radius:7px;
+    box-shadow: 0 5px 5px rgb(203, 187, 187)
+}
+
+
 
 .create-note input,
 .create-note textarea{
     width:100%;
     border:none;
-    padding:4px; 
-    outline: none;
+    padding: 10px;
     font-size: 1.2em;
-    font-family: inherit;
-    resize: none;
+    resize:none;
+    outline: none;
+    box-sizing: border-box;
+    
 }
 
-.create-note button{
+
+.add-button{
     position: absolute;
-    right:18px;
+    float:right;
+    right:-428px;
     bottom:-18px;
-    background:rgb(229, 229, 109);
-    border-radius: 50%;
-    width:36px;
-    height:36px;
-    /* box-shadow: 0 1px 3px rgb(0, 0, 0,0.3); */
-    cursor: pointer;
-    outline:none
-
+    background-color: rgb(205, 159, 130);
+    border-radius: 50px;
+    width:26px;
+    height:6px;
+    cursor:pointer;
+    outline: none;
 }
-

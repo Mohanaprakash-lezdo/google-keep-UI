@@ -1,9 +1,9 @@
-// import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
 import Header from './components/Header/Header'
 import CreateNote from './components/Createnote/Createnote'
-import Note from './components/Note/Note'
-import { useState } from 'react';
+import NoteList from './components/NoteList/NoteList'
+import Sidebar from './components/Sidebar/Sidebar'
 
 
 function App() {
@@ -27,14 +27,16 @@ function App() {
   return (
     <div className="App">
       <Header/>
+      <div className='main-content'>
+      <Sidebar/>
+      <div className='content' >
       <CreateNote addNote={addNote} />
-      {notes.map((note,index)=>{
-        return(
-          <Note id={index} title={note.title} content={note.content} deleteNote={deleteNote}/>      
-        )
-      })}
-      
-    </div>
+      <NoteList notes={notes} deleteNote={deleteNote}/>
+     
+      </div>
+     </div>
+     </div>
+    
   );
 }
 
