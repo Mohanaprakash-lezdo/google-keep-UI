@@ -3,7 +3,7 @@ import LightbulbIcon from "@mui/icons-material/Lightbulb";
 import "./Header.css";
 
 
-const Header = () => {
+const Header = ({setSearchQuery}) => {
     return (
       <header className="header">
           <div className="header-content">
@@ -11,7 +11,10 @@ const Header = () => {
             <LightbulbIcon className="icon" />
             Keep
           </h1>
-          <input type="text" placeholder="Search..." />
+          <input type='search' 
+          placeholder="Search..."
+          onChange={(e)=>setSearchQuery(e.target.value)}
+           />
           </div>
       </header>
     );

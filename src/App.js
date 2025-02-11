@@ -8,6 +8,7 @@ import Sidebar from './components/Sidebar/Sidebar'
 
 function App() {
   const [notes, setNotes]=useState([])
+  const [searchQuery,setSearchQuery]=useState('')
 
   const addNote=(newNote)=>{
     setNotes((prevNotes)=>{
@@ -23,15 +24,20 @@ function App() {
       
     })
   }
+  // note search filter
+  const filteredNotes=notes.filter((note)=>
+    note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    note.content.toLowerCase().includes(searchQuery.toLowerCase())
+)
   
   return (
     <div className="App">
-      <Header/>
+      <Header setSearchQuery={setSearchQuery}/>
       <div className='main-content'>
       <Sidebar/>
       <div className='content' >
       <CreateNote addNote={addNote} />
-      <NoteList notes={notes} deleteNote={deleteNote}/>
+      <NoteList notes={filteredNotes} deleteNote={deleteNote}/>
      
       </div>
      </div>

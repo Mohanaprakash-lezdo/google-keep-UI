@@ -1,5 +1,6 @@
 import React from 'react'
 import DeleteIcon from '@mui/icons-material/Delete';
+import PushPinIcon from '@mui/icons-material/PushPin';
 import './Note.css'
 const Note = (props) => {
   const handleClick=()=>{
@@ -8,13 +9,20 @@ const Note = (props) => {
   
   return (
     <div className='note'>
+      {/* {displays uploaded image } */}
+      {props.image && <img src={props.image} alt='uploaded' className='note-image'/>}
       <h2>{props.title}</h2>
       <span>{props.content}</span>
-      <button onClick={handleClick}>
+      {/* {icon container(hidden)} */}
+      <div className='icons'>
+        <button className='pin-icon'>
+          <PushPinIcon/>
+        </button>
+        <button className='delete-icon' onClick={handleClick}>
         <DeleteIcon/>
 
       </button>
-
+      </div>
     </div>
   )
 }

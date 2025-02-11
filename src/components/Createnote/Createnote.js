@@ -2,18 +2,23 @@ import React, { useState,useEffect,useRef } from "react";
 import Zoom from "@mui/material/Zoom";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
+import ImageIcon from '@mui/icons-material/Image';
+import IconButton from '@mui/material/IconButton';
 import "./Createnote.css";
+// import { Icon } from "@mui/material";
 
 // expand fn
-const Createnote = (props) => {
+const Createnote = (props) => { 
   const [isexpanded, setisExpanded] = useState(false);
   const [note, setNote] = useState({
     title: "",
     content: "",
+    image:'',
   });
 
   // updated code
   const formRef = useRef(null); 
+  const fileInputRef=useRef(null);
 
   const expand = () => {
     setisExpanded(true);
@@ -28,12 +33,31 @@ const Createnote = (props) => {
       };
     });
   };
+
+  const handleImageUpload=(event)=>{
+    const file=event.target.files[0];
+    if (file){
+      const reader=new FileReader();
+      reader.onloadend=()=>{
+      setNote((prevNote)=>({
+        ...prevNote,
+        image:reader.result  
+        //  store  base64  image url
+      }))
+    }
+    reader.readAsDataURL(file);
+  }
+  }
+  const handleIconClick=()=>{
+    fileInputRef.current.click()
+  }
   const submitNote=(event)=>{
     event.preventDefault();
     props.addNote(note);
     setNote({
       title:'',
-      content:''
+      content:'',
+      image:'', 
     })
     setisExpanded(false)
   }
@@ -51,7 +75,7 @@ const Createnote = (props) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  console.log(note);
+  
 
   return (
     <div className="create-note-container">
@@ -72,9 +96,27 @@ const Createnote = (props) => {
           placeholder="Take a note..."
           onClick={expand}
           onChange={handleChange}
-          rows={isexpanded?3:1}
           value={note.content}
         />
+        {/* {image upload input} */}
+        {isexpanded &&(
+          <div className="image-upload">
+          <input type='file'
+           accept='image/*' 
+           ref={fileInputRef}
+           style={{display:'none'}}
+          //  hide default file input
+           onChange={handleImageUpload}/>
+           <IconButton onClick={handleIconClick} color='primary'>
+            <ImageIcon/>
+           </IconButton>
+          </div>
+        )}
+
+        {/* {image preview} */}
+        {note.image && (
+        <img src={note.image} alt='preview' className="image-preview"/>
+      )}
 
         <Zoom in={isexpanded}>
           <Fab onClick={submitNote} className="add-button">

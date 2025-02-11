@@ -9,7 +9,8 @@ const NoteList = ({notes,deleteNote}) => {
                 id={index} 
                 title={note.title} 
                 content={note.content}
-                 deleteNote={deleteNote}/>
+                image={note.image}
+                deleteNote={deleteNote}/>
             ))}
         </div>
   )
