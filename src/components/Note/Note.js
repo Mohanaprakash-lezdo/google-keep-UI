@@ -2,20 +2,30 @@ import React from 'react'
 import DeleteIcon from '@mui/icons-material/Delete';
 import PushPinIcon from '@mui/icons-material/PushPin';
 import './Note.css'
+
 const Note = (props) => {
+  const  {id,title,content,image,isPinned,deleteNote,pinNote}=props
+
+  // delete notes
   const handleClick=()=>{
-    props.deleteNote(props.id)
+    deleteNote(id)
   }
+
+  // handle the pin
+  const handlePin=()=>{
+    
+    pinNote(id,!isPinned)
+  } 
   
   return (
-    <div className='note'>
+    <div className={`note ${isPinned ? 'pinned':''}`}>
       {/* {displays uploaded image } */}
-      {props.image && <img src={props.image} alt='uploaded' className='note-image'/>}
-      <h2>{props.title}</h2>
-      <span>{props.content}</span>
+      {image && <img src={image} alt='uploaded' className='note-image'/>}
+      <h2>{title}</h2>
+      <span>{content}</span>
       {/* {icon container(hidden)} */}
       <div className='icons'>
-        <button className='pin-icon'>
+        <button className='pin-icon' onClick={handlePin} style={{color:isPinned?'gold':'gray'}}>
           <PushPinIcon/>
         </button>
         <button className='delete-icon' onClick={handleClick}>

@@ -24,11 +24,22 @@ function App() {
       
     })
   }
+
+  // pin  or unpin a note
+  const pinNote=(id,isPinned)=>{
+    setNotes((prevNotes)=>
+      prevNotes.map((note,index)=>
+      index===id?{...note,isPinned}:note)
+    )
+  }
   // note search filter
   const filteredNotes=notes.filter((note)=>
     note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     note.content.toLowerCase().includes(searchQuery.toLowerCase())
 )
+  // separte pin and unpin notes
+  const pinnedNotes=filteredNotes.filter((note)=>note.isPinned)
+  const unpinnedNotes=filteredNotes.filter((note)=>!note.isPinned)
   
   return (
     <div className="App">
@@ -37,7 +48,8 @@ function App() {
       <Sidebar/>
       <div className='content' >
       <CreateNote addNote={addNote} />
-      <NoteList notes={filteredNotes} deleteNote={deleteNote}/>
+      {/* {Render pinned notes first,then unpin notes} */}
+      <NoteList notes={[...pinnedNotes,...unpinnedNotes]} deleteNote={deleteNote} pinNote={pinNote}/>
      
       </div>
      </div>

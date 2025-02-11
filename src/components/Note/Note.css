@@ -10,6 +10,19 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
+}
+
+/* highlight the pinned notes */
+.pinned{
+    transform: scale(1.05);
+    border:2px solid gold;
+    box-shadow: 0 5px 15px rgba(225, 215, 0,0.5);
+
+}
+
+.pinned .pin-icon{
+    color:gold!important
 }
 
 .note img{
@@ -40,17 +53,17 @@
     right:8px;
     display: flex;
     gap:8px;
-    opacity: 1;  
+    opacity: 0;  
     /* opacity for initially hidden */
-    visibility: visible;
-    /* transition: opacity 0.3s,visibility 0.3s; */
+    visibility: hidden;
+    transition: opacity 0.3s,visibility 0.3s;
     
 }
-/* 
+
 .note:hover .icons{
     opacity: 1;
     visibility: visible;
-} */
+}
 
 .icon button{
     display: flex;
@@ -61,10 +74,14 @@
     border:none;
     cursor:pointer;
     outline:none;
-    color:green;
+    /* color:green; */
     transition: color 0.2s
 }
 
-.icons button:hover{
+.pin-icon:hover{
+    color:gold;
+}
+
+.delete-icon:hover{
     color:red
-} 
+}

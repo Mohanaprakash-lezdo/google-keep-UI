@@ -1,7 +1,7 @@
 import React from 'react'
 import Note from '../Note/Note'
 
-const NoteList = ({notes,deleteNote}) => {
+const NoteList = ({notes,deleteNote,pinNote}) => {
   return (
     <div className='note-list'>
         {notes.map((note,index)=>(
@@ -10,7 +10,10 @@ const NoteList = ({notes,deleteNote}) => {
                 title={note.title} 
                 content={note.content}
                 image={note.image}
-                deleteNote={deleteNote}/>
+                isPinned={note.isPinned}
+                deleteNote={deleteNote}
+                pinNote={pinNote}
+                />
             ))}
         </div>
   )
