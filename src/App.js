@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import {v4 as uuidv4} from 'uuid';
 import './App.css';
 import Header from './components/Header/Header'
 import CreateNote from './components/Createnote/Createnote'
@@ -12,26 +13,34 @@ function App() {
 
   const addNote=(newNote)=>{
     setNotes((prevNotes)=>{
-      return [...prevNotes,newNote]
+      return [...prevNotes,
+        {...newNote,ispinned:false,id:uuidv4()}]
+        // generating a unique id
     })
   }
 
   const deleteNote=(id)=>{
     setNotes((prevNotes)=>{
-      return prevNotes.filter((noteItem,index)=>{
-        return index!==id
+      return prevNotes.filter((note)=>{
+        return note.id!==id
       })
       
     })
   }
 
   // pin  or unpin a note
-  const pinNote=(id,isPinned)=>{
+  const pinNote=(id)=>{
     setNotes((prevNotes)=>
-      prevNotes.map((note,index)=>
-      index===id?{...note,isPinned}:note)
+      prevNotes.map((note)=>
+      note.id===id?{...note,isPinned:!note.isPinned}:note)
     )
   }
+
+  // copy a note 
+  const copyNote=(note)=>{
+    setNotes((prevNotes)=>[...prevNotes,{...note,id:uuidv4()}])
+  }
+
   // note search filter
   const filteredNotes=notes.filter((note)=>
     note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -40,7 +49,7 @@ function App() {
   // separte pin and unpin notes
   const pinnedNotes=filteredNotes.filter((note)=>note.isPinned)
   const unpinnedNotes=filteredNotes.filter((note)=>!note.isPinned)
-  
+  console.log(notes)
   return (
     <div className="App">
       <Header setSearchQuery={setSearchQuery}/>
@@ -48,8 +57,37 @@ function App() {
       <Sidebar/>
       <div className='content' >
       <CreateNote addNote={addNote} />
-      {/* {Render pinned notes first,then unpin notes} */}
-      <NoteList notes={[...pinnedNotes,...unpinnedNotes]} deleteNote={deleteNote} pinNote={pinNote}/>
+      {/* {Show pinned notes} */}
+      {pinnedNotes.length>0 &&(
+        <>
+        <h2>pinned</h2>
+        <NoteList
+          notes= {pinnedNotes}
+          deleteNote={deleteNote}
+          pinNote={pinNote}
+          copyNote={copyNote}/>
+        </>
+      )}
+      {/* {show unpinned notes} */}
+      {pinnedNotes.length>0 && unpinnedNotes.length>0 &&(
+        <>
+        <h2>Others</h2>
+        <NoteList
+        notes={unpinnedNotes}
+        deleteNote={deleteNote}
+        pinNote={pinNote}
+        copyNote={copyNote}/>
+        </>
+        )}
+
+      {/* unpinned notes */}
+      {pinnedNotes.length ===0 && unpinnedNotes.length>0 &&(
+      <NoteList
+      notes={unpinnedNotes}
+      deleteNote={deleteNote}
+      pinNote={pinNote}
+      copyNote={copyNote}/>
+    )}
      
       </div>
      </div>
