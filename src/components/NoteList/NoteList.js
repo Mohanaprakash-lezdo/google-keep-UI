@@ -2,7 +2,7 @@ import React from 'react'
 import Note from '../Note/Note'
 import './NoteList.css'
 
-const NoteList = ({notes,deleteNote,pinNote,copyNote}) => {
+const NoteList = ({notes,deleteNote,pinNote,copyNote,editNote}) => {
   return (
     <div className='note-list'>
         {notes.map((note)=>(
@@ -15,6 +15,7 @@ const NoteList = ({notes,deleteNote,pinNote,copyNote}) => {
                 deleteNote={deleteNote}
                 pinNote={pinNote}
                 copyNote={copyNote}
+                editNote={editNote}
                 // pass a copy function
                 />
             ))}

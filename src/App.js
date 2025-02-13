@@ -14,7 +14,7 @@ function App() {
   const addNote=(newNote)=>{
     setNotes((prevNotes)=>{
       return [...prevNotes,
-        {...newNote,ispinned:false,id:uuidv4()}]
+        {...newNote,ispinned:false,id:uuidv4(),lastedited:null}]
         // generating a unique id
     })
   }
@@ -38,8 +38,17 @@ function App() {
 
   // copy a note 
   const copyNote=(note)=>{
-    setNotes((prevNotes)=>[...prevNotes,{...note,id:uuidv4()}])
+    setNotes((prevNotes)=>[...prevNotes,{...note,id:uuidv4(),lastedited:null}])
   }
+
+  // Edit a note
+  const editNote=(id,updateTitle,updatedContent,updatedImage)=>{
+    setNotes((prevNotes)=>
+    prevNotes.map((note)=>
+    note.id===id
+  ?{...note,title:updateTitle,content:updatedContent,image:updatedImage,lastedited:new Date().toLocaleTimeString()}:note))
+  }
+
 
   // note search filter
   const filteredNotes=notes.filter((note)=>
@@ -65,7 +74,8 @@ function App() {
           notes= {pinnedNotes}
           deleteNote={deleteNote}
           pinNote={pinNote}
-          copyNote={copyNote}/>
+          copyNote={copyNote}
+          editNote={editNote}/>
         </>
       )}
       {/* {show unpinned notes} */}
@@ -76,7 +86,8 @@ function App() {
         notes={unpinnedNotes}
         deleteNote={deleteNote}
         pinNote={pinNote}
-        copyNote={copyNote}/>
+        copyNote={copyNote}
+        editNote={editNote}/>
         </>
         )}
 
@@ -86,7 +97,8 @@ function App() {
       notes={unpinnedNotes}
       deleteNote={deleteNote}
       pinNote={pinNote}
-      copyNote={copyNote}/>
+      copyNote={copyNote}
+      editNote={editNote}/>
     )}
      
       </div>
