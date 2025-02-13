@@ -52,6 +52,12 @@
 .icons{
     opacity:0;
     visibility: hidden;
+    position: absolute;
+    top:5px;
+    right:5px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
 
 }
 
@@ -63,7 +69,7 @@
 
 .pin-icon,
 .more-options{
-    position: absolute;
+    /* position: absolute; */
     background: none;
     border: none;
     cursor: pointer;
@@ -72,19 +78,21 @@
 }
 
 .pin-icon{
+    position: absolute;
     top:5px;
     right:5px;
 }
 
 .more-options{
-    bottom:5px;
+    position: absolute;
+    top:40px;
     right:5px
 }
 
 /* drop down menu */
 .menu{
     position: absolute;
-    bottom:30px; 
+    top:70px; 
     right:5px;
     background:white;
     box-shadow: 0px 2px  8px rgba(0,0,0,0.2);
@@ -110,11 +118,12 @@
     background-color: rgb(235,235,235);
 }
 
-/* .modal-overlay{
+.modal-overlay{
     position:fixed;
     top:0;
     left:0;
     width: 100%;
+    height: 100%;
     background:rgba(0,0,0,0.5);
     display: flex;
     justify-content: center;
@@ -123,118 +132,61 @@
 }
 
 /* Modal Content */
-/* .modal-content {
+.modal-content {
     background: white;
     padding: 20px;
     border-radius: 10px;
     max-width: 400px;
     width: 90%;
+    height: 40%;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
     text-align: center;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
-  
-  .modal-content h2 {
-    font-size: 1.5em;
-    margin-bottom: 10px;
-  }
-  
-  .modal-content p {
-    font-size: 1.1em;
-    word-wrap: break-word;
-  }
-  
-  .modal-image {
-    width: 100%;
+
+
+  /* image width in modal */
+  .modal-image{
+    width:auto;
+    max-width: 100%;
     max-height: 200px;
     object-fit: cover;
-    border-radius: 5px;
-    margin-bottom: 8px;
-  } */
-  
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+  /* pin &More options inside modal */
+ 
   /* Modal Icons */
-  /* .modal-icons {
+   .modal-icons {
+    position: absolute;
+    top:5px;
+    right:5px;
     display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 10px;
+    flex-direction: column;
+    align-items: flex-end;
   }
   
-  .modal-icons button {
+  .modal-pin-icon {
     background: none;
     border: none;
     cursor: pointer;
     font-size: 16px;
+    margin-bottom: 8px;
+  }
+  .modal-more-options{
+    position:absolute ;
+    bottom: -193px;
+    right:27px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
   }
   
   .close-button {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 20px;
-  } */
-
-  /* Modal Overlay */
-/* .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  } */
-  
-  /* Modal Content */
-  /* .modal-content {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    max-width: 400px;
-    width: 90%;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
-    text-align: center;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  } */
-  
-  /* Pin and 3-Dot Options Container */
-  /* .modal-icons {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-  } */
-  
-  /* Pin Icon - Top Right */
-  /* .modal-pin-icon {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 20px;
-    margin-bottom: 8px;
-  } */
-  
-  /* More Options Icon - Below Pin */
-  /* .modal-more-options {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 20px;
-  }
-   */
-  /* Close Button - Bottom Right */
-  /* .close-btn {
     position: absolute;
     bottom: 5px;
     right: 5px;
@@ -242,34 +194,6 @@
     border: none;
     cursor: pointer;
     font-size: 20px;
-  }
-   */
-  /* Dropdown Menu */
-  /* .menu {
-    position: absolute; */
-    /* top: 40px; Adjusted position */
-    /* right: 5px;
-    background: white;
-    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.2);
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-size: 14px;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-  } */
-/*   
-  .menu button {
-    padding: 5px;
-    cursor: pointer;
-    background: none;
-    border: none;
-    text-align: center;
-    width: 100%;
-    font-size: 14px;
-  } */
-  
-  /* .menu button:hover {
-    background-color: rgb(235, 235, 235);
-  } */
+  } 
+
+
