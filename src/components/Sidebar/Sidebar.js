@@ -6,8 +6,8 @@ const Sidebar = () => {
         <ul>
             <li>Notes</li>
             <li>Reminders</li>
-            <li>Edit labels</li>
-            <li>Archieve</li>
+            <li>Edit Labels</li>
+            <li>Archive</li>
             <li>Trash</li>
             </ul>
             </div>

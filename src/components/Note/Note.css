@@ -52,6 +52,11 @@
    
 }
 
+/* No image */
+/* .note .note.no-image{
+    min-height: 100p;
+} */
+
 .note span{
     font-size: 1.1em;
     margin-bottom: 10px;
@@ -60,10 +65,15 @@
    
 }
 
+.note.no-image{
+    min-height: 60px;
+    max-height: auto;
+}
+
 /* Icons visibility */
 .icons{
-    opacity:1;
-    visibility: visible;
+    opacity:0;
+    visibility: hidden;
     position: absolute;
     width:100%;
     display: flex;
@@ -73,10 +83,10 @@
 }
 
 
-/* .note:hover .icons{
+.note:hover .icons{
     opacity: 1;
     visibility: visible;
-}  */
+} 
 
 
 
@@ -92,8 +102,8 @@
 
 .more-options{
     position: relative;
-    bottom: -224px;
-    right: 3px;
+    bottom: -204px;
+    right: 5px;
     background: none;
     border: none;
     cursor: pointer;
@@ -104,8 +114,8 @@
 /* drop down menu */
 .menu{
     position: absolute;
-    top:35px; 
-    right:5px;
+    top:117px; 
+    right:15px;
     background:white;
     box-shadow: 0px 2px  8px rgba(0,0,0,0.2);
     padding:5px 10px;
@@ -174,6 +184,8 @@
     object-fit: cover;
     border-radius: 8px;
     margin-bottom: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
   }
   /* pin &More options inside modal */
  
@@ -230,8 +242,8 @@
   
   .close-button {
     position: absolute;
-    bottom: 5px;
-    right: 5px;
+    bottom: -2px;
+    right: 0px;
     background: none;
     border: none;
     cursor: pointer;
@@ -243,5 +255,63 @@
     display: flex;
     flex-direction: column;
     padding:5px;
-    gap:10px
+    gap:10px;
+    background: none;
+  }
+
+  .delete-image{
+    position: absolute;
+    top:7px;
+    right:5px;
+    background:none ;
+    border:none;
+    cursor: pointer;
+    font-size: 18px;
+    color:rgb(255,77,77);
+
+  }
+
+  .edit-note-container{
+    display: flex;
+    flex-direction: column;
+    gap:10px;
+    padding: 15px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+    width: 100%;
+  }
+
+  .edit-note-title{
+    font-size: 18px;
+    font-weight: bold;
+    border:none;
+    outline: none;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .edit-note-content{
+    min-height:80px;
+    border:none;
+    outline: none;
+    padding:10px;
+    font-size: 16px;
+    resize: none;
+  }
+
+  .edit-note-actions{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .save-button{
+    background-color: #4285f4;
+    color:white;
+    border: none;
+    padding: 8px 15px;
+    border-radius:15px;
+    cursor: pointer;
+    /* font-weight: bold; */
   }
