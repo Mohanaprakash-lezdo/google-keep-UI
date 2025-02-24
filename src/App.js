@@ -12,6 +12,9 @@ import EditLabel from "./Pages/EditLabels/EditLabel";
 import Archive from "./Pages/Archive/Archive";
 import Trash from "./Pages/Trash/Trash";
 
+
+
+
 function App() {
   const [notes, setNotes] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
