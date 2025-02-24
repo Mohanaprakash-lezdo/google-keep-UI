@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useParams,useNavigate } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import PushPinIcon from "@mui/icons-material/PushPin";
@@ -6,6 +7,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import ImageIcon from "@mui/icons-material/Image";
 import IconButton from "@mui/material/IconButton";
 import "./Note.css";
+// import userEvent from "@testing-library/user-event";
 
 const Note = (props) => {
   const {
@@ -19,6 +21,14 @@ const Note = (props) => {
     copyNote,
     editNote,
   } = props;
+  const navigate=useNavigate();
+  const {noteId}=useParams();
+  const modalref=useRef(null);
+  // get note id from url
+  const menuRef = useRef(null);
+ 
+  const fileInputRef = useRef(null);
+
   const [showMenu, setShowMenu] = useState(false);
   // const [showModalMenu, setShowModalMenu]=useState(false);
   const [hovered, setHovered] = useState(false);
@@ -29,14 +39,13 @@ const Note = (props) => {
   const [editedImage, setEditedImage] = useState(image);
   const [lastedited, setLastEdited] = useState(null);
 
-  const menuRef = useRef(null);
-  // const modalMenuRef=useRef(null);
-  const fileInputRef = useRef(null);
+
 
   // delete notes
   const handleDelete = () => {
     deleteNote(id);
-    setShowMenu(false);
+    setShowMenu(false)
+    navigate('/');
   };
 
   const handleDeleteImage = () => {
@@ -55,22 +64,22 @@ const Note = (props) => {
     setShowMenu(false);
   };
 
-  // close menu when clicking outside
+  // close modal when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setShowMenu(false);
+      if (modalref.current && !modalref.current.contains(event.target)) {
+        handleCloseModal();
       }
-      //  close modal menu separtely
-      // if (modalMenuRef.current && !modalMenuRef.current.contains(event.target)){
-      //   setShowModalMenu(false);
-      // }
+    
     };
-    document.addEventListener("mousedown", handleClickOutside);
+    if (isexpanded){
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [isexpanded]);
 
   // Handle edit mode
   const handleEdit = () => {
@@ -110,10 +119,28 @@ const Note = (props) => {
     }
   };
 
+  // open note  in modal &update url
+  const handleOpenNote=()=>{
+    navigate(`/note/${id}`);
+    // update URL
+    setisExpanded(true);
+  }
+
   const handleCloseModal = () => {
     setisExpanded(false);
     setisEditing(false);
+    navigate('/')
+    // it will go back to the previous route
   };
+
+  // open modal automatically if noteid exists in the url
+  useEffect(()=>{
+    if (noteId===id){
+      setisExpanded(true);
+    }
+  },[noteId,id]);
+
+  // 
 
   return (
     <>
@@ -122,7 +149,7 @@ const Note = (props) => {
         className={`note ${isPinned ? "pinned" : ""}`}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        onClick={() => setisExpanded(true)}
+        onClick={handleOpenNote}
       >
         {/* {displays uploaded image } */}
         {image && <img src={image} alt="uploaded" className="note-image" />}
@@ -173,7 +200,7 @@ const Note = (props) => {
       {/* Expanded View */}
       {isexpanded && (
         <div className="modal-overlay" onClick={handleCloseModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content"  onClick={(e) => e.stopPropagation()}>
             {/* pin & 3-dot & close Menu Container */}
             {/* <div className="modal-icons"> */}
             {/* {pin icon  in top right}
