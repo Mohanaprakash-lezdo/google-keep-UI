@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import "./App.css";
-import Header from "./Components/Header/Header";
-import CreateNote from "./Components/Createnote/Createnote";  
-import NoteList from "./Components/NoteList/NoteList";
+import Header from "./components/Header/Header";
+import CreateNote from "./components/Createnote/Createnote";  
+import NoteList from "./components/NoteList/NoteList";
 // import Sidebar from "./Components/Sidebar/Sidebar";
-import Layout from "./Components/Layout/Layout";
+import Layout from "./components/Layout/Layout";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Home from "./Pages/Home/Home";
 import Reminder from "./Pages/Reminder/Reminder";
