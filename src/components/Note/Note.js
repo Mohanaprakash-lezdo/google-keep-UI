@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useParams,useNavigate } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -58,6 +58,13 @@ const Note = (props) => {
     editNote(id, editedTitle, editedContent, null);
   };
 
+  const handleCloseModal = useCallback(() => {
+    setisExpanded(false);
+    setisEditing(false);
+    navigate('/')
+    // it will go back to the previous route
+},[navigate]);
+
   // handle the pin
   const handlePin = () => {
     pinNote(id);
@@ -84,7 +91,7 @@ const Note = (props) => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isexpanded]);
+  }, [isexpanded,handleCloseModal]);
 
   // Handle edit mode
   const handleEdit = () => {
@@ -131,12 +138,7 @@ const Note = (props) => {
     setisExpanded(true);
   }
 
-  const handleCloseModal = () => {
-    setisExpanded(false);
-    setisEditing(false);
-    navigate('/')
-    // it will go back to the previous route
-  };
+ 
 
   // open modal automatically if noteid exists in the url
   useEffect(()=>{
