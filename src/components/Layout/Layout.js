@@ -1,6 +1,6 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import Sidebar from "../../Components/Sidebar/Sidebar"; 
+import Sidebar from "../Sidebar/Sidebar"; 
 
 const Layout = ({ labels, openModal }) => {
   return (

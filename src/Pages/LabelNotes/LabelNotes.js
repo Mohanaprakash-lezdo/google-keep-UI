@@ -1,7 +1,7 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
-import NoteList from '../../Components/NoteList/NoteList';
-import Createnote from '../../Components/Createnote/Createnote';
+import NoteList from '../../components/NoteList/NoteList';
+import Createnote from '../../components/Createnote/Createnote';
 
 const LabelNotes = ({notes,addNote,deleteNote,editNote,pinNote,copyNote}) => {
     const {labelName}=useParams();
