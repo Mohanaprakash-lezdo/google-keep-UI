@@ -1,14 +1,17 @@
 import React, { useState,useEffect,useRef } from "react";
+import { useDispatch } from "react-redux";
+import { addNote } from "../../features/NotesSlice";
 import Zoom from "@mui/material/Zoom";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
 import ImageIcon from '@mui/icons-material/Image';
 import IconButton from '@mui/material/IconButton';
 import "./Createnote.css";
-// import { Icon } from "@mui/material";
+
 
 // expand fn
-const Createnote = ({addNote,labelName}) => { 
+const Createnote = ({labelName}) => { 
+  const dispatch=useDispatch();
   const [isexpanded, setisExpanded] = useState(false);
   const [note, setNote] = useState({
     title: "",
@@ -55,7 +58,7 @@ const Createnote = ({addNote,labelName}) => {
   const submitNote=(event)=>{
     event.preventDefault();
     if (note.title.trim() || note.content.trim() || note.image)
-    addNote(note);
+    dispatch(addNote(note));
     setNote({
       title:'',
       content:'',
@@ -122,7 +125,7 @@ const Createnote = ({addNote,labelName}) => {
       )}
 
         <Zoom in={isexpanded}>
-          <Fab onClick={submitNote} className="add-button">
+          <Fab onClick={submitNote} className="add-buttons">
             <AddIcon />
           </Fab>
         </Zoom>

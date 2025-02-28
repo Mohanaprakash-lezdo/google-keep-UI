@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { v4 as uuidv4 } from "uuid";
+import {React,useState} from "react";
+import { useSelector,useDispatch } from "react-redux";
+import {addNote,deleteNote,editNote,pinNote,archivedNote,UnarchiveNote, copyNote, addLabel,restoreNote,permanentDeleteNote,deleteLabel} from './features/NotesSlice'
 import "./App.css";
 import Header from "./components/Header/Header";
 import CreateNote from "./components/Createnote/Createnote";  
@@ -16,128 +17,30 @@ import LabelNotes from "./Pages/LabelNotes/LabelNotes";
 // import { LabelSharp } from "@mui/icons-material";
 
 function App() {
-  const [notes, setNotes] = useState([]);
-  const [trashedNotes,setTrashNotes]=useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [labels,setLabels]=useState([]);
-  const[isModalOpen,setIsModalOpen]=useState(false);
+  const dispatch=useDispatch();
+  const notes=useSelector((state)=>state.notes.notes);
+  const trashedNotes=useSelector((state)=>state.notes.trashedNotes);
+  const searchQuery= useSelector((state)=>state.notes.searchQuery);
+  const archivedNotes=useSelector((state)=>state.notes.archivedNotes)
+  const labels=useSelector((state)=>state.notes.labels)
   const navigate=useNavigate();
   const location = useLocation();
-
-  const addNote = (newNote,isGlobal=true) => {
-    setNotes((prevNotes) => 
-        [...prevNotes,
-          {
-            ...newNote,
-             ispinned: false, 
-             id: uuidv4(),
-            lastedited: null,
-            isGlobal
-          }
-          ,
-        ]);
-      }
-     
-      
-      // generating a unique id
-    
-  ;
-  // move note to trash
-  const deleteNote = (id,labelName=null) => {
-    setNotes((prevNotes) => {
-      const noteToTrash=prevNotes.find((note)=>note.id ===id);
-      if (noteToTrash){
-        if (labelName && noteToTrash.labels.length>1){
-          // Remove the label insteadt of deleting  the note
-          const updatedNote={
-            ...noteToTrash,
-            labels:noteToTrash.labels.filter((label)=>label !==labelName)
-          }
-          return prevNotes.map((note)=>
-          note.id===id?updatedNote:note)
-        }else{
-          setTrashNotes((prevTrashedNotes)=>[...prevTrashedNotes,noteToTrash])
-          return prevNotes.filter((note) => 
-            note.id !== id);;
-        }
-      }
-      return prevNotes;
-
-      });
-      // Redirect to home if the delete note was open
-      if (location.pathname=== `/note/${id}`){
-        navigate('/')
-      }
-    };
-
-    // Move note to trash
-    const restoreNote=(id)=>{
-      setTrashNotes((prevTrashedNotes)=>{
-        const noteToRestore=prevTrashedNotes.find((note)=>note.id===id);
-        if (noteToRestore){
-          // check if  all labels on the  note exist  in the label state
-          const noteLabels=Array.isArray(noteToRestore.labels)?noteToRestore.labels:  [];
-          const missinglabels=noteLabels.filter(label=>!labels.includes(label));
-          if (missinglabels.length>0){
-            const userChoice=window.confirm(
-              `this note labels had that no longer exist: ${missinglabels.join(',')}.\nDo you want to restore it on home page?`
-            )
-           if (!userChoice){
-            return prevTrashedNotes
-           }
-          }
-
-          const updatedNote={
-            ...noteToRestore,
-            labels:noteLabels.filter(label=>labels.includes(label)) || [],
-            isGlobal:true 
-
-          }
-          setNotes((prevNotes)=>[...prevNotes,updatedNote])
-          navigate('/')
-        }
-        return prevTrashedNotes.filter((note)=>note.id !==id);
-      })
-    }
-
-    // premantely delete
-    const permanentDeleteNote=(id)=>{
-      setTrashNotes((prevTrash)=>prevTrash.filter((note)=>note.id !==id))
-    }
-
-  // pin  or unpin a note
-  const pinNote = (id) => {
-    setNotes((prevNotes) =>
-      prevNotes.map((note) =>
-        note.id === id ? { ...note, isPinned: !note.isPinned } : note
-      )
-    );
-  };
+  const[isModalOpen,setIsModalOpen]=useState(false);
+  const handleAddNote=(newNote)=>{
+    dispatch(addNote(newNote))
+  }
 
   // copy a note
-  const copyNote = (note) => {
-    setNotes((prevNotes) => [
-      ...prevNotes,
-      { ...note, id: uuidv4(), lastedited: null },
-    ]);
-  };
+  const handleCopyNote = (id) => {
+    dispatch(copyNote(id))
+  }
 
-  // Edit a note
-  const editNote = (id, updateTitle, updatedContent, updatedImage) => {
-    setNotes((prevNotes) =>
-      prevNotes.map((note) =>
-        note.id === id
-          ? {
-              ...note,
-              title: updateTitle,
-              content: updatedContent,
-              image: updatedImage,
-              lastedited: new Date().toLocaleTimeString(),
-            }
-          : note
-      )
-    );
-  };
+  // pin/unpin note
+  const handlePinNote=(id)=>{
+    dispatch(pinNote(id))
+  }
+
+  
 
   // note search filter
   const filteredNotes = notes.filter(
@@ -160,18 +63,7 @@ function App() {
   // const isReminder=location.pathname ==='/Reminder';
   const isHome=location.pathname ==='/';
 
-  // add a label
-  const addLabel=(newLabel)=>{
-    if (newLabel.trim() && !labels.includes(newLabel)){
-      setLabels((prevLabels)=>[...prevLabels,newLabel])
-    }
-  }
-
-  // delete a label
-  const deleteLabel=(labelToDelete)=>{
-    setLabels((prevLabels)=> prevLabels.filter((label)=>label !==labelToDelete))
-  }
-
+  
   // open modal
   const openModal=()=>{
     setIsModalOpen(true)
@@ -186,7 +78,7 @@ function App() {
 
   return (
     <div className="App">
-      <Header setSearchQuery={setSearchQuery} />
+      <Header/>
       <div className="main-content">
 
         <Layout labels={labels} openModal={openModal}/>
@@ -195,39 +87,41 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/Reminder" element={
               <>
-              <CreateNote addNote={addNote}/>
+              <CreateNote addNote={handleAddNote}/>
               <Reminder />
               </>}
                />
             
-            <Route path="/Archive" element={<Archive />} />
+            <Route path="/Archive" element={<Archive
+            archivedNote={archivedNotes}
+            UnarchiveNote={(id)=>dispatch(UnarchiveNote(id))}/>}/>
             <Route path="/Trash" element={
               <Trash
                trashedNotes={trashedNotes}
-               restoreNote={restoreNote}
-               permanentDeleteNote={permanentDeleteNote}
+               restoreNote={(id)=>dispatch(restoreNote(id))}
+               permanentDeleteNote={(id)=>dispatch(permanentDeleteNote(id))}
                />} />
             <Route path='/note/:id' element={<NoteList notes={notes} editNote={editNote}/>}/>
             <Route path='/label/:labelName' element={
               <LabelNotes notes={notes} 
-              addNote={addNote}
-              deleteNote={deleteNote}
+              addNote={handleAddNote}
+              deleteNote={(id)=>dispatch(deleteNote(id))}
               editNote={editNote}
-              pinNote={pinNote}
-              copyNote={copyNote}/>}/>
+              pinNote={handlePinNote}
+              copyNote={handleCopyNote}/>}/>
           </Routes>
 
           {/* editlabel modal */}
           {isModalOpen &&(
             <EditLabel
             labels={labels}
-            addLabel={addLabel}
-            deleteLabel={deleteLabel}
+            addLabel={(label)=>dispatch(addLabel(label))}
+            deleteLabel={(label)=>dispatch(deleteLabel(label))}
             closeModal={closeModal}/>
           )}
 
           {/* {show create note only for Home and Reminder path } */}
-          {isHome && <CreateNote addNote={addNote}/>}
+          {isHome && <CreateNote addNote={handleAddNote}/>}
 
         
           {/* {show notes  only on home} */}
@@ -239,9 +133,9 @@ function App() {
                <h2>Pinned</h2>
                <NoteList
                  notes={pinnedNotes}
-                 deleteNote={deleteNote}
-                 pinNote={pinNote}
-                 copyNote={copyNote}
+                 deleteNote={(id)=>dispatch(deleteNote(id))}
+                 pinNote={handlePinNote}
+                 copyNote={handleCopyNote}
                  editNote={editNote}
                />
              </>
@@ -252,9 +146,9 @@ function App() {
                <h2>Others</h2>
                <NoteList
                  notes={unpinnedNotes}
-                 deleteNote={deleteNote}
-                 pinNote={pinNote}
-                 copyNote={copyNote}
+                 deleteNote={(id)=>dispatch(deleteNote(id))}
+                 pinNote={handlePinNote}
+                 copyNote={handleCopyNote}
                  editNote={editNote}
                />
              </>
@@ -264,9 +158,9 @@ function App() {
            {pinnedNotes.length === 0 && unpinnedNotes.length > 0 && (
              <NoteList
                notes={unpinnedNotes}
-               deleteNote={deleteNote}
-               pinNote={pinNote}
-               copyNote={copyNote}
+               deleteNote={(id)=>dispatch(deleteNote(id))}
+               pinNote={handlePinNote}
+               copyNote={handleCopyNote}
                editNote={editNote}
              />
            )}

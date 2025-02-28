@@ -45,15 +45,15 @@
     margin-top: 10px;
 }
 
-.add-button{
-    position: absolute;
+.add-buttons{
+    /* position: absolute; */
     right:-348px;
     bottom:-18px;
-    background-color: rgb(205, 159, 130);
-    border-radius: 50px;
+    /* background-color: rgb(205, 159, 130); */
+    /* border-radius: 50px; */
     width:26px;
     height:6px;
-    cursor:pointer;
+    /* cursor:pointer; */
     outline: none;
   
 }
