@@ -7,8 +7,8 @@ const initialState={
     trashedNotes:[],
     archivedNotes:[],
     labels:[],
+    reminderNotes:[],
     searchQuery:'',
-
 };
 
 const NotesSlice=createSlice({
@@ -17,13 +17,17 @@ const NotesSlice=createSlice({
     reducers:{
         // add note 
         addNote:(state,action)=>{
-            state.notes.push({
+            state.notes.push(
+                {id:uuidv4(),
+                ...action.payload});
+            // store in normal note
+            },
+        addReminderNote:(state,action)=>{
+            state.reminderNotes.push(
+                {id:uuidv4(),
                 ...action.payload,
-                id:uuidv4(),
-                isPinned:false,
-                isGlobal:true,
-                lastEdited:null,
-            })
+                reminderTime:action.payload.reminderTime || new Date().toLocaleString(),
+                });
         },
         // delete note
         deleteNote:(state,action)=>{
@@ -35,14 +39,19 @@ const NotesSlice=createSlice({
             }
         },
         // restore note
-        restoreNote:(state,action)=>{
-            const id =action.payload;
-            const noteToRestore=state.notes.find((note)=>note.id===id);
-            if (noteToRestore){
-                state.notes.push(noteToRestore);
-                state.trashedNotes=state.trashedNotes.filter((note)=>note.id !==id);
+        restoreNote: (state, action) => {
+            const noteIndex = state.trashedNotes.findIndex(note => note.id === action.payload);
+            if (noteIndex !== -1) {
+              const restoredNote = state.trashedNotes[noteIndex];
+          
+              // Add it back to `notes`
+              state.notes.push(restoredNote);
+          
+              // Remove from `trashedNotes`
+              state.trashedNotes.splice(noteIndex, 1);
             }
-        },
+          },
+          
         // Permanent Delete
         permanentDeleteNote:(state,action)=>{
             state.trashedNotes=state.trashedNotes.filter((note)=>note.id !==action.payload);
@@ -119,9 +128,9 @@ const NotesSlice=createSlice({
     }
 
 })
-
 export const {
     addNote,
+    addReminderNote,
     deleteNote,
     restoreNote,
     permanentDeleteNote,

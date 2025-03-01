@@ -1,6 +1,6 @@
 import {React,useState} from "react";
 import { useSelector,useDispatch } from "react-redux";
-import {addNote,deleteNote,editNote,pinNote,archivedNote,UnarchiveNote, copyNote, addLabel,restoreNote,permanentDeleteNote,deleteLabel} from './features/NotesSlice'
+import {addNote,deleteNote,editNote,pinNote,archivedNote,UnarchiveNote,addReminderNote,copyNote, addLabel,restoreNote,permanentDeleteNote,deleteLabel} from './features/NotesSlice'
 import "./App.css";
 import Header from "./components/Header/Header";
 import CreateNote from "./components/Createnote/Createnote";  
@@ -23,11 +23,18 @@ function App() {
   const searchQuery= useSelector((state)=>state.notes.searchQuery);
   const archivedNotes=useSelector((state)=>state.notes.archivedNotes)
   const labels=useSelector((state)=>state.notes.labels)
+  const reminderNotes=useSelector((state)=>state.notes.reminderNotes)
   const navigate=useNavigate();
   const location = useLocation();
   const[isModalOpen,setIsModalOpen]=useState(false);
+
+  // add a note
   const handleAddNote=(newNote)=>{
-    dispatch(addNote(newNote))
+    if (location.pathname === "/Reminder") {
+      dispatch(addReminderNote(newNote)); // Dispatch to reminderNotes
+    } else {
+      dispatch(addNote(newNote)); // Dispatch to regular notes
+    }
   }
 
   // copy a note
@@ -43,25 +50,29 @@ function App() {
   
 
   // note search filter
-  const filteredNotes = notes.filter(
-    (note) =>note.isGlobal &&(
-      note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      note.content.toLowerCase().includes(searchQuery.toLowerCase())
-
-    )
-     
-  );
-  // separte pin and unpin notes
+  const filteredNotes = notes.filter(note=>{
+    if(!note || !note.title || !note.content) return false;
+    return  note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        note.content.toLowerCase().includes(searchQuery.toLowerCase())
+  })
+  
+  // Remove  reminder notes  from home
+  const filteredHomeNotes=filteredNotes.filter(
+    (note)=>!reminderNotes.some((reminder)=>reminder.id===note.id)
+  ) 
+  // // separte pin and unpin notes
   const pinnedNotes = filteredNotes.filter((note) => note.isPinned);
   const unpinnedNotes = filteredNotes.filter((note) => !note.isPinned);
-  console.log('notes',notes);
-  console.log('trashnednotes',trashedNotes);
+  // console.log('notes',notes);
+  // console.log('trashnednotes',trashedNotes);
 
   // Determine if we're in Trash  or Archive
   const isTrash=location.pathname ==='/Trash';
   const isArchive=location.pathname ==='/Archive';
-  // const isReminder=location.pathname ==='/Reminder';
+  
   const isHome=location.pathname ==='/';
+  const isReminder = location.pathname === "/Reminder"; 
+ 
 
   
   // open modal
@@ -85,10 +96,13 @@ function App() {
         <div className="content">
           <Routes>
             <Route path="/" element={<Home />} />
+
             <Route path="/Reminder" element={
               <>
               <CreateNote addNote={handleAddNote}/>
-              <Reminder />
+              <Reminder 
+              reminderNotes={reminderNotes}
+              />
               </>}
                />
             
@@ -125,7 +139,7 @@ function App() {
 
         
           {/* {show notes  only on home} */}
-          {isHome &&(
+          {(isHome || isReminder) &&(
              <>
              {/* {Show pinned notes} */}
            {pinnedNotes.length > 0 && (

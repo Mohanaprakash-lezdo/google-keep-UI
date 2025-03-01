@@ -1,8 +1,11 @@
-import React from 'react'
+import React from 'react';
+import { useDispatch } from 'react-redux';
+import { restoreNote,permanentDeleteNote } from '../../features/NotesSlice';
 import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import './Trash.css'
-const Trash = ({trashedNotes,restoreNote,permanentDeleteNote}) => {
+const Trash = ({trashedNotes}) => {
+  const dispatch=useDispatch();
   return (
     <div className='trash-container'>
       <h2>Trash</h2>
@@ -18,10 +21,10 @@ const Trash = ({trashedNotes,restoreNote,permanentDeleteNote}) => {
             <p>{note.content}</p>
             {note.image && <img src={note.image} alt='note'/>}
             <div className='trash-actions'>
-              <button onClick={()=>restoreNote(note.id)}>
+              <button onClick={()=>dispatch(restoreNote(note.id))}>
                 <RestoreFromTrashIcon/>
               </button>
-              <button onClick={()=>permanentDeleteNote(note.id)}>
+              <button onClick={()=>dispatch(permanentDeleteNote(note.id))}>
                 <DeleteForeverIcon/>
               </button>
             </div>
