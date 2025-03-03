@@ -6,12 +6,13 @@ import Fab from "@mui/material/Fab";
 import ImageIcon from "@mui/icons-material/Image";
 import IconButton from "@mui/material/IconButton";
 import { useLocation } from "react-router-dom";
+import {v4 as uuidv4} from 'uuid';
 import "./Createnote.css";
 
 const Createnote = ({ labelName }) => {
   const dispatch = useDispatch();
   const location = useLocation();
-  const isReminderPath = location.pathname === "/reminder";
+  const isReminderPath = location.pathname === "/Reminder";
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [note, setNote] = useState({
@@ -57,23 +58,19 @@ const Createnote = ({ labelName }) => {
 
   const submitNote = (event) => {
     event.preventDefault();
-    if (note.title.trim()) {
-      if (isReminderPath) {
-        dispatch(
-          addReminderNote({
-            title: note.title,
-            reminderTime: new Date().toLocaleString(),
-          })
-        );
-      } else {
-        dispatch(addNote(note));
-      }
+    if (note.title.trim() || note.content.trim()) {
+      const newNote={...note,id:uuidv4(),isReminder: isReminderPath};
+      
+    if (isReminderPath) {  
+      // Dispatch to Reminder Notes only if it's a reminder
+      dispatch(addReminderNote(newNote));
+    } else {
+      // Dispatch normal notes to Home
+      dispatch(addNote(newNote));
     }
-    resetForm();
-  };
-
-  const resetForm = () => {
+    
     setNote({
+      id:uuidv4(),  
       title: "",
       content: "",
       image: "",
@@ -82,6 +79,7 @@ const Createnote = ({ labelName }) => {
     });
     setIsExpanded(false);
   };
+  }
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -107,17 +105,17 @@ const Createnote = ({ labelName }) => {
             value={note.title}
           />
         )}
-        {!isReminderPath && (
+        
           <textarea
             type="text"
             name="content"
-            placeholder="Take a note..."
+            placeholder={isReminderPath?'Add a reminder...':'Take a note...'}
             onClick={expand}
             onChange={handleChange}
             value={note.content}
           />
-        )}
-        {isExpanded && !isReminderPath && (
+        
+        {isExpanded  && (
           <div className="image-upload">
             <input
               type="file"
@@ -145,3 +143,4 @@ const Createnote = ({ labelName }) => {
 };
 
 export default Createnote;
+

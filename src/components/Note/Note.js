@@ -1,18 +1,23 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import {  useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { deleteNote, pinNote, copyNote, editNote } from "../../features/NotesSlice";
+import { deleteNote, pinNote, copyNote, editNote,archiveNote,UnarchiveNote} from "../../features/NotesSlice";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import PushPinIcon from "@mui/icons-material/PushPin";
+import ArchiveIcon from "@mui/icons-material/Archive"; // ✅ Archive icon
+import UnarchiveIcon from "@mui/icons-material/Unarchive";
 import CloseIcon from "@mui/icons-material/Close";
 import ImageIcon from "@mui/icons-material/Image";
 import IconButton from "@mui/material/IconButton";
+import {v4 as  uuidv4} from 'uuid';
 import "./Note.css";
 
-const Note = ({id,title,content,image,isPinned,lastEdited}) => {
+const Note = ({id,title,content,image,isPinned,lastEdited,isArchived}) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+ 
+  // const location = useLocation();  
   const modalref = useRef(null);
   
   const fileInputRef = useRef(null);
@@ -68,6 +73,18 @@ const Note = ({id,title,content,image,isPinned,lastEdited}) => {
     navigate("/");
   };
 
+  const handleArchive = () => {
+    dispatch(archiveNote(id));
+    setShowMenu(false);
+    navigate("/archive"); // ✅ Navigate to Archive page after archiving
+  };
+
+  const handleUnarchive = () => {
+    dispatch(UnarchiveNote(id));
+    setShowMenu(false);
+    navigate("/"); // ✅ Navigate to Home page after unarchiving
+  };
+
   const handleDeleteImage = () => {
     dispatch(editNote({ id, title:editedTitle, content:editedContent, image: null }));
   };
@@ -78,6 +95,7 @@ const Note = ({id,title,content,image,isPinned,lastEdited}) => {
 
   const handleCopy = () => {
     dispatch(copyNote({ 
+      id:uuidv4(),
       title:editedTitle,
       content:editedContent,
       image:editedImage,
@@ -170,7 +188,18 @@ const Note = ({id,title,content,image,isPinned,lastEdited}) => {
           <div className="menu" >
             <button onClick={handleEdit}>Edit</button>
             <button onClick={handleCopy}>Make a Copy</button>
-            <button onClick={handleDelete}>Delete</button>
+            {isArchived ? (
+              <button onClick={handleUnarchive}>
+                <UnarchiveIcon /> Unarchive
+              </button>
+            ) : (
+              <button onClick={handleArchive}>
+                <ArchiveIcon /> Archive
+              </button>
+            )}
+            <button onClick={handleDelete}>
+              <DeleteIcon /> Delete
+            </button>
           </div>
         )}
       </div>

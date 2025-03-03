@@ -17,41 +17,49 @@ const NotesSlice=createSlice({
     reducers:{
         // add note 
         addNote:(state,action)=>{
-            state.notes.push(
-                {id:uuidv4(),
-                ...action.payload});
-            // store in normal note
-            },
-        addReminderNote:(state,action)=>{
-            state.reminderNotes.push(
-                {id:uuidv4(),
-                ...action.payload,
-                reminderTime:action.payload.reminderTime || new Date().toLocaleString(),
-                });
-        },
-        // delete note
-        deleteNote:(state,action)=>{
-            const id=action.payload;
-            const noteToTrash=state.notes.find((note)=>note.id===id);
-            if (noteToTrash){
-                state.trashedNotes.push(noteToTrash);
-                state.notes=state.notes.filter((note)=>note.id !==id);
+            if(!action.payload.isReminder){
+                state.notes.push(action.payload)
             }
         },
+        addReminderNote:(state,action)=>{
+              state.reminderNotes.push(action.payload);
+              
+            },
+                // reminderTime:action.payload.reminderTime || new Date().toLocaleString(),
+        // delete note
+        deleteNote: (state, action) => {
+            const id = action.payload;
+            let noteToTrash = state.notes.find((note) => note.id === id) || 
+                              state.archivedNotes.find((note) => note.id === id);
+            
+            if (noteToTrash) {
+                state.trashedNotes.push({ 
+                    ...noteToTrash, 
+                    deletedFromArchive: !!state.archivedNotes.find(n => n.id === id) 
+                });
+
+                state.notes = state.notes.filter((note) => note.id !== id);
+                state.archivedNotes = state.archivedNotes.filter((note) => note.id !== id);
+            }
+        },
+
         // restore note
         restoreNote: (state, action) => {
             const noteIndex = state.trashedNotes.findIndex(note => note.id === action.payload);
             if (noteIndex !== -1) {
-              const restoredNote = state.trashedNotes[noteIndex];
-          
-              // Add it back to `notes`
-              state.notes.push(restoredNote);
-          
-              // Remove from `trashedNotes`
-              state.trashedNotes.splice(noteIndex, 1);
+                const restoredNote = state.trashedNotes[noteIndex];
+
+                if (restoredNote.deletedFromArchive) {
+                    // Restore to Archive
+                    state.archivedNotes.push({ ...restoredNote, isArchived: true });
+                } else {
+                    // Restore to Home
+                    state.notes.push({ ...restoredNote, isArchived: false });
+                }
+
+                state.trashedNotes.splice(noteIndex, 1);
             }
-          },
-          
+        },
         // Permanent Delete
         permanentDeleteNote:(state,action)=>{
             state.trashedNotes=state.trashedNotes.filter((note)=>note.id !==action.payload);
@@ -78,11 +86,11 @@ const NotesSlice=createSlice({
         },
 
         // archive note
-        archivedNote:(state,action)=>{
+        archiveNote:(state,action)=>{
             const id =action.payload;
             const  noteToArchive=state.notes.find((note)=>note.id===id);
             if (noteToArchive){
-                state.archivedNotes.push(noteToArchive);
+                state.archivedNotes.push({...noteToArchive,isArchived:true});
                 state.notes=state.notes.filter((note)=>note.id !==id)
             }
         },
@@ -90,10 +98,11 @@ const NotesSlice=createSlice({
         // unarchive note
         UnarchiveNote:(state,action)=>{
             const id=action.payload;
-            const noteToUnarchive=state.archivedNotes.find((note)=>note.id===id);
-            if (noteToUnarchive){
+            const noteIndex=state.archivedNotes.findIndex((note)=>note.id===id);
+            if (noteIndex!==-1){
+                const noteToUnarchive={...state.archivedNotes[noteIndex],isArchived:false};
                 state.notes.push(noteToUnarchive);
-                state.archivedNotes=state.archivedNotes.filte((note)=>note.id !==id);
+                state.archivedNotes.splice(noteIndex,1);
             }
         },
 

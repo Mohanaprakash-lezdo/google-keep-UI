@@ -1,6 +1,6 @@
 import {React,useState} from "react";
 import { useSelector,useDispatch } from "react-redux";
-import {addNote,deleteNote,editNote,pinNote,archivedNote,UnarchiveNote,addReminderNote,copyNote, addLabel,restoreNote,permanentDeleteNote,deleteLabel} from './features/NotesSlice'
+import {addNote,deleteNote,editNote,pinNote,UnarchiveNote,addReminderNote,copyNote, addLabel,restoreNote,permanentDeleteNote,deleteLabel} from './features/NotesSlice'
 import "./App.css";
 import Header from "./components/Header/Header";
 import CreateNote from "./components/Createnote/Createnote";  
@@ -30,12 +30,14 @@ function App() {
 
   // add a note
   const handleAddNote=(newNote)=>{
-    if (location.pathname === "/Reminder") {
-      dispatch(addReminderNote(newNote)); // Dispatch to reminderNotes
-    } else {
-      dispatch(addNote(newNote)); // Dispatch to regular notes
-    }
+    dispatch(addNote(newNote))
   }
+
+  // add  a note for reminders
+  const handleAddReminderNote = (newNote) => {
+    dispatch(addReminderNote(newNote));
+  };
+
 
   // copy a note
   const handleCopyNote = (id) => {
@@ -49,22 +51,25 @@ function App() {
 
   
 
-  // note search filter
-  const filteredNotes = notes.filter(note=>{
-    if(!note || !note.title || !note.content) return false;
-    return  note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        note.content.toLowerCase().includes(searchQuery.toLowerCase())
-  })
+  // // note search filter
+  // const filteredNotes = notes.filter(note=>{
+  //   if(!note || !note.title || !note.content) return false;
+  //   return  note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //       note.content.toLowerCase().includes(searchQuery.toLowerCase())
+  // })
   
   // Remove  reminder notes  from home
-  const filteredHomeNotes=filteredNotes.filter(
-    (note)=>!reminderNotes.some((reminder)=>reminder.id===note.id)
-  ) 
+  const filteredHomeNotes=notes.filter(
+    (note)=>!note.isReminder)
+
+  const filteredReminderNotes=reminderNotes.filter(note=>note.isReminder)
+
   // // separte pin and unpin notes
-  const pinnedNotes = filteredNotes.filter((note) => note.isPinned);
-  const unpinnedNotes = filteredNotes.filter((note) => !note.isPinned);
-  // console.log('notes',notes);
-  // console.log('trashnednotes',trashedNotes);
+  const pinnedNotes = filteredHomeNotes.filter((note) => note.isPinned);
+  const unpinnedNotes = filteredHomeNotes.filter((note) => !note.isPinned);
+  console.log('notes',notes);
+  console.log('trashnednotes',trashedNotes);
+  console.log('remindernotes',reminderNotes)
 
   // Determine if we're in Trash  or Archive
   const isTrash=location.pathname ==='/Trash';
@@ -98,24 +103,22 @@ function App() {
             <Route path="/" element={<Home />} />
 
             <Route path="/Reminder" element={
-              <>
-              <CreateNote addNote={handleAddNote}/>
               <Reminder 
-              reminderNotes={reminderNotes}
+              // handleAddNote={handleAddNote}
               />
-              </>}
+              }
                />
             
-            <Route path="/Archive" element={<Archive
-            archivedNote={archivedNotes}
-            UnarchiveNote={(id)=>dispatch(UnarchiveNote(id))}/>}/>
+            <Route path="/Archive" element={<Archive archivedNote={archivedNotes}
+             UnarchiveNote={(id) => dispatch(UnarchiveNote(id))} />} />
+
             <Route path="/Trash" element={
               <Trash
                trashedNotes={trashedNotes}
                restoreNote={(id)=>dispatch(restoreNote(id))}
                permanentDeleteNote={(id)=>dispatch(permanentDeleteNote(id))}
                />} />
-            <Route path='/note/:id' element={<NoteList notes={notes} editNote={editNote}/>}/>
+            <Route path='/note/:id' element={<NoteList notes={notes} editNote={(id, updatedNote) => dispatch(editNote({ id, ...updatedNote }))} />} />
             <Route path='/label/:labelName' element={
               <LabelNotes notes={notes} 
               addNote={handleAddNote}
@@ -139,7 +142,7 @@ function App() {
 
         
           {/* {show notes  only on home} */}
-          {(isHome || isReminder) &&(
+          {isHome &&(
              <>
              {/* {Show pinned notes} */}
            {pinnedNotes.length > 0 && (
