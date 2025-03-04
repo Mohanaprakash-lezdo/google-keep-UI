@@ -1,5 +1,102 @@
-.note-list{
+.note-list {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-}
+    gap: 10px;
+  }
+  
+  /* Style for Reminder Note Box */
+  .reminder-note {
+    position: relative;
+    background: rgb(248, 248, 183); /* Light yellow background */
+    border: 1px solid #ffd700; /* Gold border */
+    padding: 15px;
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    width: 250px; /* Fixed width for uniformity */
+    min-height: 120px; /* Adjust height */
+    transition: background 0.2s ease-in-out;
+    cursor: pointer;
+  }
+  
+  .reminder-note:hover {
+    background: rgb(255, 255, 204); /* Slightly darker yellow on hover */
+  }
+  
+  /* .note-item {
+    position: relative;
+    padding: 15px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: background 0.2s ease-in-out;
+    margin-bottom: 10px;
+    cursor: pointer;
+    width: 250px;
+    min-height: 120px;
+  }
+   */
+  /* .note-item:hover {
+    background: #f5f5f5;
+  }
+   */
+  .reminder-time {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 5px;
+  }
+  
+  /* 3-dot menu */
+  .menu-container {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+  }
+  
+  .reminder-note:hover .menu-container {
+    visibility: visible;
+    opacity: 1;
+  }
+  
+  .menu-button {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: gray;
+  }
+  
+  .menu-dropdown {
+    position: absolute;
+    top: 25px;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    padding: 5px;
+    border-radius: 4px;
+    min-width: 100px;
+    z-index: 10;
+  }
+  
+  .menu-dropdown button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px 12px;
+    width: 100%;
+    text-align: left;
+    font-size: 14px;
+    transition: background 0.2s ease-in-out;
+  }
+  
+  .menu-dropdown button:hover {
+    background: lightgray;
+  }
+  

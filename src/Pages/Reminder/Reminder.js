@@ -1,4 +1,4 @@
-import React,{useState} from "react";
+import React  from "react";
 import { useSelector,useDispatch} from "react-redux";
 import CreateNote from '../../components/Createnote/Createnote';
 import NoteList from "../../components/NoteList/NoteList";
@@ -14,16 +14,16 @@ const Reminder = () => {
     // // Function to add reminder notes
     const handleAddReminderNote = (newNote) => {
       if (newNote.title || newNote.content){
-      dispatch(addReminderNote(newNote))};
+      dispatch(addReminderNote({...newNote,isReminder:true}))};
     };
   
 
   return (
     <div>
       <h2>Reminders</h2>
-      <CreateNote/>
+      <CreateNote onAddNote={handleAddReminderNote} isReminder={true}/>
       {reminderNotes.length > 0 ? (
-        <NoteList notes={reminderNotes}/>
+        <NoteList noteType='reminder'/>
       ) : (
         <p>No reminders yet!</p>
       )}

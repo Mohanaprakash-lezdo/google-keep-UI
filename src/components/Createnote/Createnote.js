@@ -59,7 +59,9 @@ const Createnote = ({ labelName }) => {
   const submitNote = (event) => {
     event.preventDefault();
     if (note.title.trim() || note.content.trim()) {
-      const newNote={...note,id:uuidv4(),isReminder: isReminderPath};
+      const newNote={...note,id:uuidv4(),isReminder: isReminderPath,
+        labels:labelName?labelName:[]
+      };
       
     if (isReminderPath) {  
       // Dispatch to Reminder Notes only if it's a reminder
