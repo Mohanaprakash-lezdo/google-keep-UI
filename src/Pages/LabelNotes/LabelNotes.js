@@ -51,13 +51,23 @@ import { addNote, deleteNote, editNote, pinNote, copyNote } from "../../features
 import NoteList from "../../components/NoteList/NoteList";
 import Createnote from "../../components/Createnote/Createnote";
 
+
+
 const LabelNotes = () => {
   const { labelName } = useParams();
   const dispatch = useDispatch();
-  const notes = useSelector((state) => state.notes[labelName] || []); // Get notes for specific label
+
+  // Get notes for specific label
+  const notes = useSelector((state) => state.notes.labels[labelName])|| []; 
+  // Get notes for specific label
+  
+  console.log("Redux labels state:", useSelector((state) => state.notes.labels));
+   // Debugging
+  console.log(`Notes for label "${labelName}":`, notes); 
+  // Debugging
 
   const handleAddNote = (note) => {
-    dispatch(addNote({ ...note, labels: [labelName] }));
+    dispatch(addNote({ ...note, labels:[labelName]}));
   };
 
   return (
@@ -69,11 +79,13 @@ const LabelNotes = () => {
       {notes.length > 0 ? (
         <NoteList
           notes={notes}
+          noteType='label'
+          labelName={labelName}
           deleteNote={(id) => dispatch(deleteNote({ id, label: labelName }))}
           pinNote={(id) => dispatch(pinNote({ id, label: labelName }))}
           copyNote={(id) => dispatch(copyNote({ id, label: labelName }))}
           editNote={(id, updatedNote) => dispatch(editNote({ id, updatedNote, label: labelName }))}
-        />
+        />  
       ) : (
         <p>No Notes for this label</p>
       )}

@@ -82,7 +82,8 @@ const EditLabel = ({ closeModal }) => {
 
     if (labelName && !memoizedLabels.includes(labelName)) {
       dispatch(addLabel(labelName));
-      setNewLabel(""); // Reset input after adding label
+      setNewLabel(""); 
+      // Reset input after adding label
     }
   };
 

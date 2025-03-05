@@ -79,13 +79,16 @@
 // };
 
 // export default Sidebar;
-import React from "react";
+import React,{useMemo} from "react";
 import { NavLink } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector} from "react-redux";
+// import { addLabel } from "../../features/NotesSlice";
 import "./Sidebar.css";
 
 const Sidebar = ({ openModal }) => {
-  const labels = useSelector((state) => Object.keys(state.notes.labels)); // Convert label object keys to array
+  // const dispatch=useDispatch();
+  const labels = useSelector((state) => (state.notes.labels)); // Convert label object keys to array
+  const memoizedLabels=useMemo(()=>Object.keys(labels),[labels])
 
   return (
     <div className="sidebar">
@@ -100,10 +103,10 @@ const Sidebar = ({ openModal }) => {
             Reminders
           </NavLink>
         </li>
-
-        {labels.length > 0 && (
+        {/* display labels */}
+        {memoizedLabels.length > 0 && (
           <div className="sidebar-labels">
-            {labels.map((label) => (
+            {memoizedLabels.map((label) => (
               <li key={label} className="label-item">
                 <NavLink to={`/label/${label}`} className={({ isActive }) => (isActive ? "active sidebar-link" : "sidebar-link")}>
                   {label}
