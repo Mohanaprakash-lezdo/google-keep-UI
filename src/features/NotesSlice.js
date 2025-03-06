@@ -20,28 +20,24 @@ const NotesSlice = createSlice({
         id: uuidv4(),
         title: action.payload.title || "",
         content: action.payload.content || "",
-        labels: action.payload.labels || [], // Ensure labels array exists
+        labels: action.payload.labels || [],
         isPinned: action.payload.isPinned || false,
         isArchived: action.payload.isArchived || false,
       };
     
-      if (action.payload.labels && action.payload.labels.length > 0) {
-        // Store in correct label
-        action.payload.labels.forEach((label) => {
-          if (!state.labels[label]) {
-            state.labels[label] = []; // Initialize array if missing
-          }
-          state.labels[label].push(newNote);
-        });
+      // Always store the note in `state.notes` so it appears in UI
+      state.notes.push(newNote);
     
-        console.log(`✅ Note stored under label(s): ${newNote.labels}`);
-      } else {
-        //  Store in "Notes" if no label is provided
-        state.notes.push(newNote);
-        console.log("✅ Note stored in Notes:", newNote);
+      // If the note has labels, add it under each label
+      if (newNote.labels.length > 0) {
+        newNote.labels.forEach((label) => {
+          if (!state.labels[label]) {
+            state.labels[label] = []; // Create label array if not exists
+          }
+          state.labels[label].push(newNote); // Store note under correct label
+        });
       }
     },
-    
     
 
     addReminderNote: (state, action) => {
@@ -163,39 +159,40 @@ const NotesSlice = createSlice({
       const id = action.payload;
       const noteToArchive = state.notes.find((note) => note.id === id);
       if (noteToArchive) {
-        state.archivedNotes.push({ ...noteToArchive, isArchived: true });
+        state.archivedNotes = [...state.archivedNotes, { ...noteToArchive, isArchived: true }];
         state.notes = state.notes.filter((note) => note.id !== id);
       }
     },
 
-    // unarchive note
+    // Unarchive note
     UnarchiveNote: (state, action) => {
       const id = action.payload;
       const noteIndex = state.archivedNotes.findIndex((note) => note.id === id);
       if (noteIndex !== -1) {
-        const noteToUnarchive = {
-          ...state.archivedNotes[noteIndex],
-          isArchived: false,
-        };
-        state.notes.push(noteToUnarchive);
-        state.archivedNotes.splice(noteIndex, 1);
+        const noteToUnarchive = { ...state.archivedNotes[noteIndex], isArchived: false };
+        
+        // ✅ Correctly update Redux state immutably
+        state.notes = [...state.notes, noteToUnarchive];
+        state.archivedNotes = state.archivedNotes.filter((note) => note.id !== id);
       }
     },
+
+    // deleteNote: (state, action) => {
+    //   const id = action.payload;
+    //   state.notes = state.notes.filter((note) => note.id !== id);
+    //   state.archivedNotes = state.archivedNotes.filter((note) => note.id !== id);
+    // },
 
     // copy a note
-    copyNote: (state, action) => {
-      const originalNote = state.notes.find(
-        (note) => note.id === action.payload
-      );
-      if (originalNote) {
-        state.notes.push({
-          ...originalNote,
-          id: uuidv4(),
-          lastEdited: null,
-        });
-      }
-    },
-
+   copyNote: (state, action) => {
+  const newNote = {
+    ...action.payload,
+    id: uuidv4(), // Generate a new unique ID
+    isPinned: false,
+    isArchived: false,
+  };
+  state.notes.push(newNote); // Add copied note to notes array
+},
    
     addLabel: (state, action) => {
       const labelName = action.payload.trim();
