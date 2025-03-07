@@ -80,7 +80,7 @@ const CreateNote = ({ labelName }) => {
         content: "",
         image: "",
         reminderTime: isReminderPath ? new Date().toLocaleString() : null,
-        labels: labelName ? [labelName] : [], // ✅ Reset labels properly
+        labels: labelName ? [labelName] : [], //  Reset labels properly
       });
   
       setIsExpanded(false);

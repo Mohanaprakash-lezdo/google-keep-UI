@@ -10,22 +10,22 @@ const ArchiveList = () => {
   const dispatch = useDispatch();
   const [menuOpen, setMenuOpen] = useState(null);
 
-  // ✅ Get archived notes from Redux
+  //  Get archived notes from Redux
   const archivedNotes = useSelector((state) => state.notes.archivedNotes || []);
 
-  // ✅ Debugging: Ensure archived notes are correctly retrieved
+  //  Debugging: Ensure archived notes are correctly retrieved
   useEffect(() => {
     console.log("Archived Notes in Redux Store:", archivedNotes);
   }, [archivedNotes]);
 
-  // ✅ Handle Unarchive Click
+  //  Handle Unarchive Click
   const handleUnarchive = (e, noteId) => {
     e.stopPropagation();
     dispatch(UnarchiveNote(noteId));
     navigate("/"); // Redirect to Home after unarchiving
   };
 
-  // ✅ Handle Delete Click
+  //  Handle Delete Click
   const handleDelete = (e, noteId) => {
     e.stopPropagation();
     dispatch(deleteNote(noteId));
@@ -40,18 +40,18 @@ const ArchiveList = () => {
             className="note-item"
             onMouseLeave={() => setMenuOpen(null)} // Hide menu when mouse leaves
           >
-            {/* ✅ Pass all note props explicitly */}
+            {/* Pass all note props explicitly */}
             <Note 
               id={note.id}
               title={note.title}
               content={note.content}
               labels={note.labels}
               isPinned={note.isPinned}
-              isArchived={true} // ✅ Ensure it's marked as archived
+              isArchived={true} //  Ensure it's marked as archived
               image={note.image}
             />
             
-            {/* ✅ Three-dot menu on hover */}
+            {/*  Three-dot menu on hover */}
             <div className="menu-container" onClick={(e) => setMenuOpen(note.id)}>
               <span className="menu-icon">⋮</span>
               {menuOpen === note.id && (

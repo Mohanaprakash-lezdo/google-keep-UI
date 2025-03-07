@@ -285,8 +285,8 @@
 // export default Note;
 
 
-import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteNote, copyNote, archiveNote, UnarchiveNote, pinNote } from "../../features/NotesSlice";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -302,44 +302,51 @@ import "./Note.css";
 const Note = ({ id }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
+
   const [showMenu, setShowMenu] = useState(false);
   const [hovered, setHovered] = useState(false);
 
-  // ✅ Fetch the note from Redux store
-  const note = useSelector((state) =>
-    state.notes.notes.find((note) => note.id === id) ||
-    state.notes.archivedNotes.find((note) => note.id === id)
+  //  Use `useMemo` to prevent unnecessary re-renders
+  const note = useSelector(
+    useMemo(
+      () => (state) =>
+        state.notes.notes.find((note) => note.id === id) ||
+        state.notes.archivedNotes.find((note) => note.id === id),
+      [id]
+    )
   );
 
-  if (!note) return null; // Prevent errors if note is missing
+  if (!note) return null;
 
-  const { title, content, labels, isPinned, isArchived } = note;
+  const { title, content, labels: noteLabels, isPinned, isArchived } = note;
 
-  // ✅ Copy Note
+  // Copy Note
   const handleCopy = (e) => {
     e.stopPropagation();
-    dispatch(
-      copyNote({
-        id: uuidv4(),
-        title,
-        content,
-        labels,
-        isPinned: false,
-        isArchived: false,
-      })
-    );
+  
+    const copiedNote = {
+      id: uuidv4(),
+      title,
+      content,
+      labels: noteLabels ? [...noteLabels] : [], // Preserve labels
+      isPinned: false,
+      isArchived: false,
+    };
+  
+    dispatch(copyNote(copiedNote)); // Dispatch action with copied note
+  
     setShowMenu(false);
   };
+  
 
-  // ✅ Delete Note
+  // Delete Note
   const handleDelete = (e) => {
     e.stopPropagation();
     dispatch(deleteNote(id));
     setShowMenu(false);
   };
 
-  // ✅ Archive Note
+  // Archive Note
   const handleArchive = (e) => {
     e.stopPropagation();
     dispatch(archiveNote(id));
@@ -347,7 +354,7 @@ const Note = ({ id }) => {
     navigate("/archive");
   };
 
-  // ✅ Unarchive Note
+  // Unarchive Note
   const handleUnarchive = (e) => {
     e.stopPropagation();
     dispatch(UnarchiveNote(id));
@@ -355,13 +362,13 @@ const Note = ({ id }) => {
     navigate("/");
   };
 
-  // ✅ Edit Note
+  // Edit Note
   const handleEdit = (e) => {
     e.stopPropagation();
     navigate(`/note/${id}`);
   };
 
-  // ✅ Pin Note
+  // Pin Note
   const handlePin = (e) => {
     e.stopPropagation();
     dispatch(pinNote(id));
@@ -378,10 +385,9 @@ const Note = ({ id }) => {
         <p>{content}</p>
       </div>
 
-      {/* ✅ Hover Menu */}
+      {/* Hover Menu */}
       {hovered && (
         <div className="icons">
-          {/* Pin Icon (Only for Home Page) */}
           {!isArchived && (
             <button
               className="pin-icon"
@@ -407,7 +413,7 @@ const Note = ({ id }) => {
         </div>
       )}
 
-      {/* ✅ Dropdown Menu */}
+      {/* Dropdown Menu */}
       {showMenu && (
         <div className="menu">
           <button onClick={handleCopy}>

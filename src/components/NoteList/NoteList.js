@@ -219,13 +219,13 @@ const NoteList = ({ noteType, labelName }) => {
   const dispatch = useDispatch();
   const { id } = useParams();
 
-  // ✅ Get all notes from Redux state
+  // Get all notes from Redux state
   const allNotes = useSelector((state) => state.notes.notes) || [];
   const reminderNotes = useSelector((state) => state.notes.reminderNotes) || [];
   const archivedNotes = useSelector((state) => state.notes.archivedNotes) || [];
   const labels = useSelector((state) => state.notes.labels) || {};
 
-  // ✅ State to store displayed notes
+  // State to store displayed notes
   const [displayNotes, setDisplayNotes] = useState([]);
 
   useEffect(() => {
@@ -245,7 +245,7 @@ const NoteList = ({ noteType, labelName }) => {
     console.log(`📝 Displaying notes for ${labelName || "Home"}:`, filteredNotes);
   }, [noteType, labelName, allNotes, reminderNotes, archivedNotes, labels]);
 
-  // ✅ Handle permanent delete
+  // Handle permanent delete
   const handleDelete = (e, noteId) => {
     e.stopPropagation();
     dispatch(permanentDeleteNote(noteId));
@@ -263,7 +263,7 @@ const NoteList = ({ noteType, labelName }) => {
         <p className="empty-message">No notes available</p>
       )}
 
-      {/* ✅ Modal for selected note */}
+      {/* Modal for selected note */}
       {id && (
         <div className="modal-overlay" onClick={() => navigate("/")}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -279,3 +279,4 @@ const NoteList = ({ noteType, labelName }) => {
 };
 
 export default NoteList;
+

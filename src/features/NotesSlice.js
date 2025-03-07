@@ -184,15 +184,28 @@ const NotesSlice = createSlice({
     // },
 
     // copy a note
-   copyNote: (state, action) => {
-  const newNote = {
-    ...action.payload,
-    id: uuidv4(), // Generate a new unique ID
-    isPinned: false,
-    isArchived: false,
-  };
-  state.notes.push(newNote); // Add copied note to notes array
-},
+    copyNote: (state, action) => {
+      const { id, title, content, labels } = action.payload;
+    
+      const newNote = {
+        id: uuidv4(), // Generate a new unique ID
+        title,
+        content,
+        isPinned: false,
+        isArchived: false,
+        labels: labels ? [...labels] : [], // Ensure labels are copied
+      };
+    
+      state.notes.push(newNote);
+      if (newNote.labels.length > 0) {
+        newNote.labels.forEach((label) => {
+        if (!state.labels[label]) {
+        state.labels[label] = [];
+        }
+        state.labels[label].push(newNote);
+        });
+        }
+    },
    
     addLabel: (state, action) => {
       const labelName = action.payload.trim();
@@ -230,21 +243,19 @@ const NotesSlice = createSlice({
     },
     copyNoteToLabel: (state, action) => {
       const { noteId, label } = action.payload;
-      const noteToCopy = state.notes.find((note) => note.id === noteId);
+      
+      // Find the note
+      const note = state.notes.find((note) => note.id === noteId) || 
+                   state.archivedNotes.find((note) => note.id === noteId);
     
-      if (noteToCopy) {
-        const newNote = { 
-          ...noteToCopy, 
-          id: uuidv4(), 
-          labels: [...noteToCopy.labels, label] 
-        };
+      if (note) {
+        const copiedNote = { ...note, id: uuidv4() }; // Create a new copy with a new ID
     
+        // Add the copied note to the label
         if (!state.labels[label]) {
-          state.labels[label] = []; // Create the label if it doesn't exist
+          state.labels[label] = [];
         }
-    
-        state.labels[label].push(newNote);
-        console.log(`✅ Note copied to label: ${label}`);
+        state.labels[label].push(copiedNote);
       }
     },
     
@@ -268,6 +279,7 @@ export const {
   addLabel,
   deleteLabel,
   copyNote,
+  copyNoteToLabel,
   setSearchQuery,
 } = NotesSlice.actions;
 
