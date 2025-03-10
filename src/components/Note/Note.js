@@ -1,308 +1,748 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { useParams,useNavigate } from "react-router-dom";
-import DeleteIcon from "@mui/icons-material/Delete";
+// import React, { useState } from "react";
+// import { useNavigate, useLocation } from "react-router-dom";
+// import { useDispatch, useSelector } from "react-redux";
+// import { deleteNote, copyNote, archiveNote, UnarchiveNote, pinNote } from "../../features/NotesSlice";
+// import MoreVertIcon from "@mui/icons-material/MoreVert";
+// import ArchiveIcon from "@mui/icons-material/Archive";
+// import UnarchiveIcon from "@mui/icons-material/Unarchive";
+// import DeleteIcon from "@mui/icons-material/Delete";
+// import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+// import EditIcon from "@mui/icons-material/Edit";
+// import PushPinIcon from "@mui/icons-material/PushPin";
+// import { v4 as uuidv4 } from "uuid";
+// import "./Note.css";
+
+// const Note = ({ id }) => {
+//   const dispatch = useDispatch();
+//   const navigate = useNavigate();
+//   const location = useLocation();
+//   const [showMenu, setShowMenu] = useState(false);
+//   const [hovered, setHovered] = useState(false);
+
+//   // 🔥 Fetch the note from Redux store
+//   const note = useSelector((state) =>
+//     state.notes.notes.find((note) => note.id === id) ||
+//     state.notes.archivedNotes.find((note) => note.id === id)
+//   );
+
+//   if (!note) return null; // Prevent errors if note is missing
+
+//   const { title, content, labels, isPinned, isArchived } = note;
+
+//   // Copy Note
+//   const handleCopy = (e) => {
+//     e.stopPropagation();
+//     dispatch(
+//       copyNote({
+//         id: uuidv4(),
+//         title,
+//         content,
+//         labels,
+//         isPinned: false,
+//         isArchived: false,
+//       })
+//     );
+//     setShowMenu(false);
+//   };
+
+//   // Delete Note
+//   const handleDelete = (e) => {
+//     e.stopPropagation();
+//     dispatch(deleteNote(id));
+//     setShowMenu(false);
+//   };
+
+//   // Archive Note
+//   const handleArchive = (e) => {
+//     e.stopPropagation();
+//     dispatch(archiveNote(id));
+//     setShowMenu(false);
+//     navigate("/archive");
+//   };
+
+//   // Unarchive Note
+//   const handleUnarchive = (e) => {
+//     e.stopPropagation();
+//     dispatch(UnarchiveNote(id));
+//     setShowMenu(false);
+//     navigate("/");
+//   };
+
+//   // Edit Note
+//   const handleEdit = (e) => {
+//     e.stopPropagation();
+//     navigate(`/note/${id}`);
+//   };
+
+//   // Pin Note
+//   const handlePin = (e) => {
+//     e.stopPropagation();
+//     dispatch(pinNote(id));
+//   };
+
+//   return (
+//     <div
+//       className={`note ${isPinned ? "pinned" : ""}`} 
+//       onMouseEnter={() => setHovered(true)}
+//       onMouseLeave={() => setHovered(false)}
+//     >
+//       <div className="note-content">
+//         <h2>{title}</h2>
+//         <p>{content}</p>
+//       </div>
+
+//       {/* Hover Menu */}
+//       {hovered && (
+//         <div className="icons">
+//           {/* Pin Icon (Only for Home Page) */}
+//           {!isArchived && (
+//             <button
+//               className="pin-icon"
+//               onClick={handlePin}
+//               title={isPinned ? "Unpin Note" : "Pin Note"}
+//               style={{ color: isPinned ? "black" : "grey" }}
+//             >
+//               <PushPinIcon />
+//             </button>
+//           )}
+
+//           {/* More Options */}
+//           <button
+//             className="more-options"
+//             onClick={(e) => {
+//               e.stopPropagation();
+//               setShowMenu(!showMenu);
+//             }}
+//             title="More options"
+//           >
+//             <MoreVertIcon />
+//           </button>
+//         </div>
+//       )}
+
+//       {/* Dropdown Menu */}
+//       {showMenu && (
+//         <div className="menu">
+//           <button onClick={handleCopy}>
+//             <ContentCopyIcon /> Copy
+//           </button>
+//           <button onClick={handleDelete}>
+//             <DeleteIcon /> Delete
+//           </button>
+
+//           {isArchived ? (
+//             <button onClick={handleUnarchive}>
+//               <UnarchiveIcon /> Unarchive
+//             </button>
+//           ) : (
+//             <>
+//               <button onClick={handleArchive}>
+//                 <ArchiveIcon /> Archive
+//               </button>
+//               <button onClick={handleEdit}>
+//                 <EditIcon /> Edit
+//               </button>
+//             </>
+//           )}
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default Note;
+
+
+
+
+
+// import React, { useState, useEffect, useRef, useCallback } from "react";
+// import { useNavigate, useParams } from "react-router-dom";
+// import { useDispatch, useSelector } from "react-redux";
+// import { deleteNote, pinNote, copyNote, editNote, archiveNote, UnarchiveNote } from "../../features/NotesSlice";
+// import DeleteIcon from "@mui/icons-material/Delete";
+// import MoreVertIcon from "@mui/icons-material/MoreVert";
+// import PushPinIcon from "@mui/icons-material/PushPin";
+// import ArchiveIcon from "@mui/icons-material/Archive";
+// import UnarchiveIcon from "@mui/icons-material/Unarchive";
+// import { v4 as uuidv4 } from "uuid";
+// import "./Note.css";
+
+// const Note = () => {
+//   const dispatch = useDispatch();
+//   const navigate = useNavigate();
+//   const { id } = useParams();
+//   const modalref = useRef(null);
+
+//   // Get note from Redux state
+//   const note = useSelector((state) => state.notes.notes.items.find((note) => note.id === id));
+
+//   const [showMenu, setShowMenu] = useState(false);
+//   const [hovered, setHovered] = useState(false);
+//   const [isExpanded, setIsExpanded] = useState(false);
+//   const [editedTitle, setEditedTitle] = useState(note?.title || "");
+//   const [editedContent, setEditedContent] = useState(note?.content || "");
+//   const [editedImage, setEditedImage] = useState(note?.image || null);
+
+//   useEffect(() => {
+//     if (note) {
+//       setEditedTitle(note.title || "");
+//       setEditedContent(note.content || "");
+//       setEditedImage(note.image || null);
+//     }
+//   }, [note]);
+
+//   const handleCloseModal = useCallback(() => {
+//     setIsExpanded(false);
+//     navigate("/");
+//   }, [navigate]);
+
+//   useEffect(() => {
+//     if (!isExpanded) return;
+//     const handleClickOutside = (event) => {
+//       if (modalref.current && !modalref.current.contains(event.target)) {
+//         handleCloseModal();
+//       }
+//     };
+//     document.addEventListener("mousedown", handleClickOutside);
+//     return () => document.removeEventListener("mousedown", handleClickOutside);
+//   }, [isExpanded, handleCloseModal]);
+
+//   if (!note) return null;
+
+//   const { title, content, image, isPinned, isArchived } = note;
+
+//   const handleDelete = () => {
+//     dispatch(deleteNote(id));
+//     setShowMenu(false);
+//     navigate("/");
+//   };
+
+//   const handleArchive = () => {
+//     dispatch(archiveNote(id));
+//     setShowMenu(false);
+//     navigate("/archive");
+//   };
+
+//   const handleUnarchive = () => {
+//     dispatch(UnarchiveNote(id));
+//     setShowMenu(false);
+//     navigate("/");
+//   };
+
+//   const handlePin = () => {
+//     dispatch(pinNote(id));
+//   };
+
+//   const handleCopy = () => {
+//     dispatch(copyNote({
+//       id: uuidv4(),
+//       title: editedTitle,
+//       content: editedContent,
+//       image: editedImage,
+//       isPinned: false
+//     }));
+//     setShowMenu(false);
+//   };
+
+//   return (
+//     <>
+//       <div
+//         className={`note ${isPinned ? "pinned" : ""}`}
+//         onMouseEnter={() => setHovered(true)}
+//         onMouseLeave={() => setHovered(false)}
+//         onClick={() => setIsExpanded(true)}
+//       >
+//         {image && <img src={image} alt="uploaded" className="note-image" />}
+//         <div className="note-content">
+//           <h2>{title}</h2>
+//           <span>{content}</span>
+//         </div>
+
+//         {hovered && (
+//           <div className="icons">
+//             <button className="pin-icon" onClick={handlePin} title={isPinned ? "Unpin Note" : "Pin Note"}>
+//               <PushPinIcon />
+//             </button>
+//             <button className="more-options" onClick={() => setShowMenu(!showMenu)} title="More options">
+//               <MoreVertIcon />
+//             </button>
+//           </div>
+//         )}
+
+//         {showMenu && (
+//           <div className="menu">
+//             <button onClick={handleCopy}>Make a Copy</button>
+//             {isArchived ? <button onClick={handleUnarchive}><UnarchiveIcon /> Unarchive</button> : <button onClick={handleArchive}><ArchiveIcon /> Archive</button>}
+//             <button onClick={handleDelete}><DeleteIcon /> Delete</button>
+//           </div>
+//         )}
+//       </div>
+//     </>
+//   );
+// };
+
+// export default Note;
+
+
+// import React, { useState, useMemo } from "react";
+// import { useNavigate } from "react-router-dom";
+// import { useDispatch, useSelector } from "react-redux";
+// import { deleteNote, copyNote, archiveNote, UnarchiveNote, pinNote } from "../../features/NotesSlice";
+// import MoreVertIcon from "@mui/icons-material/MoreVert";
+// import ArchiveIcon from "@mui/icons-material/Archive";
+// import UnarchiveIcon from "@mui/icons-material/Unarchive";
+// import DeleteIcon from "@mui/icons-material/Delete";
+// import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+// import EditIcon from "@mui/icons-material/Edit";
+// import PushPinIcon from "@mui/icons-material/PushPin";
+// import { v4 as uuidv4 } from "uuid";
+// import "./Note.css";
+
+// const Note = ({ id }) => {
+//   const dispatch = useDispatch();
+//   const navigate = useNavigate();
+
+//   const [showMenu, setShowMenu] = useState(false);
+//   const [hovered, setHovered] = useState(false);
+
+//   //  Use `useMemo` to prevent unnecessary re-renders
+//   const note = useSelector(
+//     useMemo(
+//       () => (state) =>
+//         state.notes.notes.find((note) => note.id === id) ||
+//         state.notes.archivedNotes.find((note) => note.id === id),
+//       [id]
+//     )
+//   );
+
+//   if (!note) return null;
+
+//   const { title, content, labels: noteLabels, isPinned, isArchived } = note;
+
+//   // Copy Note
+//   const handleCopy = (e) => {
+//     e.stopPropagation();
+  
+//     const copiedNote = {
+//       id: uuidv4(),
+//       title,
+//       content,
+//       labels: noteLabels ? [...noteLabels] : [], // Preserve labels
+//       isPinned: false,
+//       isArchived: false,
+//     };
+  
+//     dispatch(copyNote(copiedNote)); // Dispatch action with copied note
+  
+//     setShowMenu(false);
+//   };
+  
+
+//   // Delete Note
+//   const handleDelete = (e) => {
+//     e.stopPropagation();
+//     dispatch(deleteNote(id));
+//     setShowMenu(false);
+//   };
+
+//   // Archive Note
+//   const handleArchive = (e) => {
+//     e.stopPropagation();
+//     dispatch(archiveNote(id));
+//     setShowMenu(false);
+//     navigate("/archive");
+//   };
+
+//   // Unarchive Note
+//   const handleUnarchive = (e) => {
+//     e.stopPropagation();
+//     dispatch(UnarchiveNote(id));
+//     setShowMenu(false);
+//     navigate("/");
+//   };
+
+//   // Edit Note
+//   const handleEdit = (e) => {
+//     e.stopPropagation();
+//     navigate(`/note/${id}`);
+//   };
+
+//   // Pin Note
+//   const handlePin = (e) => {
+//     e.stopPropagation();
+//     dispatch(pinNote(id));
+//   };
+
+//   return (
+//     <div
+//       className={`note ${isPinned ? "pinned" : ""}`} 
+//       onMouseEnter={() => setHovered(true)}
+//       onMouseLeave={() => setHovered(false)}
+//     >
+//       <div className="note-content">
+//         <h2>{title}</h2>
+//         <p>{content}</p>
+//       </div>
+
+//       {/* Hover Menu */}
+//       {hovered && (
+//         <div className="icons">
+//           {!isArchived && (
+//             <button
+//               className="pin-icon"
+//               onClick={handlePin}
+//               title={isPinned ? "Unpin Note" : "Pin Note"}
+//               style={{ color: isPinned ? "black" : "grey" }}
+//             >
+//               <PushPinIcon />
+//             </button>
+//           )}
+
+//           {/* More Options */}
+//           <button
+//             className="more-options"
+//             onClick={(e) => {
+//               e.stopPropagation();
+//               setShowMenu(!showMenu);
+//             }}
+//             title="More options"
+//           >
+//             <MoreVertIcon />
+//           </button>
+//         </div>
+//       )}
+
+//       {/* Dropdown Menu */}
+//       {showMenu && (
+//         <div className="menu">
+//           <button onClick={handleCopy}>
+//             <ContentCopyIcon /> Copy
+//           </button>
+//           <button onClick={handleDelete}>
+//             <DeleteIcon /> Delete
+//           </button>
+
+//           {isArchived ? (
+//             <button onClick={handleUnarchive}>
+//               <UnarchiveIcon /> Unarchive
+//             </button>
+//           ) : (
+//             <>
+//               <button onClick={handleArchive}>
+//                 <ArchiveIcon /> Archive
+//               </button>
+//               <button onClick={handleEdit}>
+//                 <EditIcon /> Edit
+//               </button>
+//             </>
+//           )}
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default Note;
+
+// import React, { useState, useEffect, useMemo } from "react";
+// import { useDispatch, useSelector } from "react-redux";
+// import { updateNote, deleteNote, copyNote, archiveNote, UnarchiveNote, pinNote } from "../../features/NotesSlice";
+// import MoreVertIcon from "@mui/icons-material/MoreVert";
+// import ArchiveIcon from "@mui/icons-material/Archive";
+// import UnarchiveIcon from "@mui/icons-material/Unarchive";
+// import DeleteIcon from "@mui/icons-material/Delete";
+// import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+// import EditIcon from "@mui/icons-material/Edit";
+// import SaveIcon from "@mui/icons-material/Save";
+// import PushPinIcon from "@mui/icons-material/PushPin";
+// import "./Note.css";
+
+// const Note = ({ id }) => {
+//   const dispatch = useDispatch();
+//   const [showMenu, setShowMenu] = useState(false);
+//   const [hovered, setHovered] = useState(false);
+//   const [isExpanded, setIsExpanded] = useState(false);
+//   const [isEditing, setIsEditing] = useState(false);
+//   const [editedTitle, setEditedTitle] = useState("");
+//   const [editedContent, setEditedContent] = useState("");
+
+//   const note = useSelector(
+//     useMemo(
+//       () => (state) =>
+//         state.notes.notes.find((note) => note.id === id) ||
+//         state.notes.archivedNotes.find((note) => note.id === id),
+//       [id]
+//     )
+//   );
+
+//   if (!note) return null;
+
+//   const { title, content, isPinned, isArchived } = note;
+
+//   // Open edit mode
+//   const handleEdit = (e) => {
+//     e.stopPropagation();
+//     setEditedTitle(title);
+//     setEditedContent(content);
+//     setIsEditing(true);
+//     setIsExpanded(true); // Expand when editing
+//   };
+
+//   // Save changes
+//   const handleSave = (e) => {
+//     e.stopPropagation();
+//     dispatch(updateNote({ id, title: editedTitle, content: editedContent }));
+//     setIsEditing(false);
+//     setIsExpanded(false);
+//   };
+
+//   // Close modal
+//   const handleCloseModal = () => {
+//     setIsExpanded(false);
+//     setIsEditing(false);
+//   };
+
+//   return (
+//     <div
+//       className={`note ${isPinned ? "pinned" : ""}`}
+//       onMouseEnter={() => setHovered(true)}
+//       onMouseLeave={() => setHovered(false)}
+//     >
+//       <div className="note-content" onClick={() => setIsExpanded(true)}>
+//         <h2>{title}</h2>
+//         <p>{content}</p>
+//       </div>
+
+//       {/* Hover Menu */}
+//       {hovered && (
+//         <div className="icons">
+//           {!isArchived && (
+//             <button className="pin-icon" onClick={() => dispatch(pinNote(id))} title="Pin Note">
+//               <PushPinIcon style={{ color: isPinned ? "black" : "grey" }} />
+//             </button>
+//           )}
+
+//           <button
+//             className="more-options"
+//             onClick={(e) => {
+//               e.stopPropagation();
+//               setShowMenu(!showMenu);
+//             }}
+//             title="More options"
+//           >
+//             <MoreVertIcon />
+//           </button>
+//         </div>
+//       )}
+
+//       {/* Dropdown Menu */}
+//       {showMenu && (
+//         <div className="menu">
+//           <button onClick={() => dispatch(copyNote({ id, title, content }))}>
+//             <ContentCopyIcon /> Copy
+//           </button>
+//           <button onClick={() => dispatch(deleteNote(id))}>
+//             <DeleteIcon /> Delete
+//           </button>
+//           {isArchived ? (
+//             <button onClick={() => dispatch(UnarchiveNote(id))}>
+//               <UnarchiveIcon /> Unarchive
+//             </button>
+//           ) : (
+//             <>
+//               <button onClick={() => dispatch(archiveNote(id))}>
+//                 <ArchiveIcon /> Archive
+//               </button>
+//               <button onClick={handleEdit}>
+//                 <EditIcon /> Edit
+//               </button>
+//             </>
+//           )}
+//         </div>
+//       )}
+
+//       {/* Modal */}
+//       {isExpanded && (
+//         <div className="modal-overlay" onClick={handleCloseModal}>
+//           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+//             <h2>Edit Note</h2>
+//             <input
+//               type="text"
+//               value={editedTitle}
+//               onChange={(e) => setEditedTitle(e.target.value)}
+//             />
+//             <textarea
+//               value={editedContent}
+//               onChange={(e) => setEditedContent(e.target.value)}
+//             />
+//             <button onClick={handleSave}>
+//               <SaveIcon /> Save
+//             </button>
+//             <button onClick={handleCloseModal}>Cancel</button>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default Note;
+
+import React, { useState, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { updateNote, deleteNote, copyNote, archiveNote, UnarchiveNote, pinNote } from "../../features/NotesSlice";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import ArchiveIcon from "@mui/icons-material/Archive";
+import UnarchiveIcon from "@mui/icons-material/Unarchive";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import EditIcon from "@mui/icons-material/Edit";
 import PushPinIcon from "@mui/icons-material/PushPin";
 import CloseIcon from "@mui/icons-material/Close";
-import ImageIcon from "@mui/icons-material/Image";
-import IconButton from "@mui/material/IconButton";
 import "./Note.css";
-// import userEvent from "@testing-library/user-event";
 
-const Note = (props) => {
-  const {
-    id,
-    title,
-    content,
-    image,
-    isPinned,
-    deleteNote,
-    pinNote,
-    copyNote,
-    editNote,
-  } = props;
-  const navigate=useNavigate();
-  const {noteId}=useParams();
-  const modalref=useRef(null);
-  // get note id from url
-  const menuRef = useRef(null);
- 
-  const fileInputRef = useRef(null);
-
+const Note = ({ id }) => {
+  const dispatch = useDispatch();
   const [showMenu, setShowMenu] = useState(false);
-  // const [showModalMenu, setShowModalMenu]=useState(false);
   const [hovered, setHovered] = useState(false);
-  const [isexpanded, setisExpanded] = useState(false);
-  const [isediting, setisEditing] = useState(false);
-  const [editedTitle, setEditedTitle] = useState(title);
-  const [editedContent, setEditedContent] = useState(content);
-  const [editedImage, setEditedImage] = useState(image);
-  const [lastedited, setLastEdited] = useState(null);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTitle, setEditedTitle] = useState("");
+  const [editedContent, setEditedContent] = useState("");
 
+  const note = useSelector(
+    useMemo(
+      () => (state) =>
+        state.notes.notes.find((note) => note.id === id) ||
+        state.notes.archivedNotes.find((note) => note.id === id),
+      [id]
+    )
+  );
 
+  if (!note) return null;
 
-  // delete notes
-  const handleDelete = () => {
-    if(props.labelName){
-      deleteNote(id,props.labelName);
-    }else{
-      deleteNote(id)
-    }
+  const { title, content, isPinned, isArchived } = note;
 
-    setShowMenu(false)
-    navigate('/');
+  // Open modal (just for viewing)
+  const handleExpand = () => {
+    setIsExpanded(true);
   };
 
-  const handleDeleteImage = () => {
-    setEditedImage(null);
-    editNote(id, editedTitle, editedContent, null);
-  };
-
-  const handleCloseModal = useCallback(() => {
-    setisExpanded(false);
-    setisEditing(false);
-    navigate('/')
-    // it will go back to the previous route
-},[navigate]);
-
-  // handle the pin
-  const handlePin = () => {
-    pinNote(id);
-  };
-
-  // make a copy
-  const handleCopy = () => {
-    copyNote({ title, content, image, isPinned: false });
-    setShowMenu(false);
-  };
-
-  // close modal when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (modalref.current && !modalref.current.contains(event.target)) {
-        handleCloseModal();
-      }
-    
-    };
-    if (isexpanded){
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isexpanded,handleCloseModal]);
-
-  // Handle edit mode
+  // Open edit mode
   const handleEdit = () => {
-    setisEditing(true);
-    setShowMenu(false);
-  };
-  // Save edited content
-  const handleSaveEdit = () => {
-    if (
-      editedTitle !== title ||
-      editedContent !== content ||
-      editedImage !== image
-    ) {
-      const currentTime = new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-      editNote(id, editedTitle, editedContent, editedImage, currentTime);
-      setLastEdited(currentTime);
-    }
-
-    setisEditing(false);
-  };
-  const handleImageChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setEditedImage(imageUrl);
-    }
+    setEditedTitle(title);
+    setEditedContent(content);
+    setIsEditing(true);
   };
 
-  // fn to trigger the target file
-  const handleImageUploadClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-      // open the file picker
-    }
+  // Save changes
+  const handleSave = () => {
+    dispatch(updateNote({ id, title: editedTitle, content: editedContent }));
+    setIsEditing(false);
   };
 
-  // open note  in modal &update url
-  const handleOpenNote=()=>{
-    navigate(`/note/${id}`);
-    // update URL
-    setisExpanded(true);
-  }
-
- 
-
-  // open modal automatically if noteid exists in the url
-  useEffect(()=>{
-    if (noteId===id){
-      setisExpanded(true);
-    }
-  },[noteId,id]);
-
-  // 
+  // Close modal
+  const handleCloseModal = () => {
+    setIsExpanded(false);
+    setIsEditing(false);
+  };
 
   return (
-    <>
-      {/* {Normal view} */}
-      <div
-        className={`note ${isPinned ? "pinned" : ""}`}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        onClick={handleOpenNote}
-      >
-        {/* {displays uploaded image } */}
-        {image && <img src={image} alt="uploaded" className="note-image" />}
-
-        <div className="note-content">
-          <h2>{title}</h2>
-          <span>{content}</span>
-        </div>
-
-        {/* {icon container(hidden)} */}
-        {hovered && (
-          <div className="icons">
-            {/* {pin button} */}
-            <button
-              className="pin-icon"
-              onClick={(e) => {
-                e.stopPropagation();
-                handlePin();
-              }}
-              title={isPinned ? "Unpin Note" : "Pin Note"}
-              style={{ color: isPinned ? "black" : "grey" }}
-            >
-              <PushPinIcon />
-            </button>
-
-            {/* {More options button(Three dots)} */}
-            <button
-              className={`more-options ${showMenu ? "active" : ""}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowMenu(!showMenu);
-              }}
-              title="More options"
-            >
-              <MoreVertIcon />
-            </button>
-          </div>
-        )}
-        {/* {DropDown Menu (Copy and Delete )} */}
-        {showMenu && (
-          <div className="menu" ref={menuRef}>
-            <button onClick={handleEdit}>Edit</button>
-            <button onClick={handleCopy}>Make a Copy</button>
-            <button onClick={handleDelete}>Delete</button>
-          </div>
-        )}
+    <div
+      className={`note ${isPinned ? "pinned" : ""}`}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <div className="note-content" onClick={handleExpand}>
+        <h2>{title}</h2>
+        <p>{content}</p>
       </div>
-      {/* Expanded View */}
-      {isexpanded && (
-        <div className="modal-overlay" onClick={handleCloseModal}>
-          <div className="modal-content"  onClick={(e) => e.stopPropagation()}>
-            {/* pin & 3-dot & close Menu Container */}
-            {/* <div className="modal-icons"> */}
-            {/* {pin icon  in top right}
-            <button className="modal-pin-icon" onClick={handlePin} title={isPinned? 'Unpin Note':"Pin Note"}>
-              <PushPinIcon style={{color:isPinned?'black': 'grey' }}/>
+
+      {/* Hover Menu */}
+      {hovered && (
+        <div className="icons">
+          {!isArchived && (
+            <button className="pin-icon" onClick={() => dispatch(pinNote(id))} title="Pin Note">
+              <PushPinIcon style={{ color: isPinned ? "black" : "grey" }} />
             </button>
-  
-          {/* {More Options Buttons } */}
-            {/* <button
-                className='modal-more-options' 
-                onClick={(e) =>{e.stopPropagation() ;setShowModalMenu(!showModalMenu)}}
-                title="More options"
-              >
-                <MoreVertIcon />
-              </button> */}
-            {/* Dropdown Menu (Inside Modal) */}
-            {/* {showMenu && (
-                <div className="modal-menu" ref={modalMenuRef }>
-                  <button onClick={handleEdit}>Edit</button>
-                  <button onClick={handleCopy}>Make a Copy</button>
-                  <button onClick={handleDelete}>Delete</button>
-                </div>
-              )} */}
-            {/* </div> */}
+          )}
 
-            {/* editing */}
+          <button
+            className="more-options"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowMenu(!showMenu);
+            }}
+            title="More options"
+          >
+            <MoreVertIcon />
+          </button>
+        </div>
+      )}
 
-            {editedImage && (
-              <>
-                <img src={editedImage} alt="uploaded" className="modal-image" />
-                {!isediting && (
-                  <button
-                    className="delete-image"
-                    onClick={handleDeleteImage}
-                    title="Remove Image"
-                  >
-                    <DeleteIcon />
-                  </button>
-                )}
-              </>
-            )}
+      {/* Dropdown Menu */}
+      {showMenu && (
+        <div className="menu">
+          <button onClick={() => dispatch(copyNote({ id, title, content }))}>
+            <ContentCopyIcon /> Copy
+          </button>
+          <button onClick={() => dispatch(deleteNote(id))}>
+            <DeleteIcon /> Delete
+          </button>
+          {isArchived ? (
+            <button onClick={() => dispatch(UnarchiveNote(id))}>
+              <UnarchiveIcon /> Unarchive
+            </button>
+          ) : (
+            <>
+              <button onClick={() => dispatch(archiveNote(id))}>
+                <ArchiveIcon /> Archive
+              </button>
+              <button onClick={handleEdit}>
+                <EditIcon /> Edit
+              </button>
+            </>
+          )}
+        </div>
+      )}
 
-            {isediting ? (
-              <div className="edit-note-container">
-                <input
-                  type="text"
-                  className="edit-note-title"
-                  value={editedTitle}
-                  onChange={(e) => setEditedTitle(e.target.value)}
-                  placeholder="edit-title"
-                />
-                <textarea
-                  className="edit-note-content"
-                  value={editedContent}
-                  onChange={(e) => setEditedContent(e.target.value)}
-                  placeholder="Edit-description"
-                />
-                <div className="edit-note-actions">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    ref={fileInputRef}
-                    style={{ display: "none" }}
-                    onChange={handleImageChange}
-                  />
-                  <IconButton onClick={handleImageUploadClick} color="primary">
-                    <ImageIcon />
-                  </IconButton>
-                </div>
-
-                <button className="save-button" onClick={handleSaveEdit}>
-                  Save
-                </button>
-              </div>
-            ) : (
-              <>
-                <h2>{editedTitle}</h2>
-                <span>{content}</span>
-                {lastedited && (
-                  <p className="edited time">Edited on:{lastedited}</p>
-                )}
-              </>
-            )}
-
-            {/* Close  Button in bottom right */}
-            <button
-              className="close-button"
-              onClick={() => setisExpanded(false)}
-            >
+      {/* Modal */}
+      {isExpanded && (
+        <div className="modal-overlay" onClick={handleCloseModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="close-btn" onClick={handleCloseModal}>
               <CloseIcon />
             </button>
+
+            {!isEditing ? (
+              // Display note (Read-only)
+              <>
+                <h2>{title}</h2>
+                <p>{content}</p>
+              </>
+            ) : (
+              // Edit Mode
+              <>
+                <h2>Edit Note</h2>
+                <input
+                  type="text"
+                  value={editedTitle}
+                  onChange={(e) => setEditedTitle(e.target.value)}
+                />
+                <textarea
+                  value={editedContent}
+                  onChange={(e) => setEditedContent(e.target.value)}
+                />
+                <button onClick={handleSave}>Save</button>
+                <button onClick={() => setIsEditing(false)}>Cancel</button>
+              </>
+            )}
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
+
 export default Note;

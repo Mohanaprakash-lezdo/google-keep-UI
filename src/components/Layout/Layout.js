@@ -2,10 +2,10 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "../Sidebar/Sidebar"; 
 
-const Layout = ({ labels, openModal }) => {
+const Layout = ({ openModal }) => {
   return (
     <div className="layout">
-      <Sidebar labels={labels} openModal={openModal} />
+      <Sidebar openModal={openModal} />
       <div className="content">
         <Outlet /> 
       </div>

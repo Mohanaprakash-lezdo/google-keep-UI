@@ -1,90 +1,109 @@
-import React, { useState,useEffect,useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { useDispatch } from "react-redux";
+import { addNote, addReminderNote } from "../../features/NotesSlice";
 import Zoom from "@mui/material/Zoom";
 import Fab from "@mui/material/Fab";
-import AddIcon from "@mui/icons-material/Add";
-import ImageIcon from '@mui/icons-material/Image';
-import IconButton from '@mui/material/IconButton';
+import ImageIcon from "@mui/icons-material/Image";
+import IconButton from "@mui/material/IconButton";
+import { useLocation } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 import "./Createnote.css";
-// import { Icon } from "@mui/material";
 
-// expand fn
-const Createnote = ({addNote,labelName}) => { 
-  const [isexpanded, setisExpanded] = useState(false);
+const CreateNote = ({ labelName }) => {
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const isReminderPath = location.pathname === "/Reminder";
+
+  const [isExpanded, setIsExpanded] = useState(false);
   const [note, setNote] = useState({
     title: "",
     content: "",
-    image:'',
-    labels:labelName? [labelName]:[]
+    image: "",
+    reminderTime: isReminderPath ? new Date().toLocaleString() : null,
+    labels: labelName ? [labelName] : [],
   });
 
-  // updated code
-  const formRef = useRef(null); 
-  const fileInputRef=useRef(null);
+  const formRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   const expand = () => {
-    setisExpanded(true);
+    setIsExpanded(true);
   };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setNote((prevNote) => {
-      return {
-        ...prevNote,
-        [name]: value,
-      };
-    });
+    setNote((prevNote) => ({
+      ...prevNote,
+      [name]: value,
+    }));
   };
 
-  const handleImageUpload=(event)=>{
-    const file=event.target.files[0];
-    if (file){
-      const reader=new FileReader();
-      reader.onloadend=()=>{
-      setNote((prevNote)=>({
-        ...prevNote,
-        image:reader.result  
-        //  store  base64  image url
-      }))
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNote((prevNote) => ({
+          ...prevNote,
+          image: reader.result, // Store base64 image
+        }));
+      };
+      reader.readAsDataURL(file);
     }
-    reader.readAsDataURL(file);
-  }
-  }
-  const handleIconClick=()=>{
-    fileInputRef.current.click()
-  }
-  const submitNote=(event)=>{
+  };
+
+  const handleIconClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const submitNote = (event) => {
     event.preventDefault();
-    if (note.title.trim() || note.content.trim() || note.image)
-    addNote(note);
-    setNote({
-      title:'',
-      content:'',
-      image:'', 
-      labels:labelName ? [labelName]:[]
-    })
-    setisExpanded(false)
-  }
-  // Function to detect clicks outside the form
+  
+    if (note.title.trim() || note.content.trim()) {
+      const newNote = {
+        ...note,
+        id: uuidv4(),
+        isReminder: isReminderPath,
+        labels: labelName ? [labelName] : [], //  Ensure label is correctly assigned
+      };
+  
+      if (isReminderPath) {
+        dispatch(addReminderNote(newNote)); 
+      } else {
+        dispatch(addNote(newNote)); 
+      }
+  
+      console.log("Note created:", newNote); // Debugging
+  
+      setNote({
+        title: "",
+        content: "",
+        image: "",
+        reminderTime: isReminderPath ? new Date().toLocaleString() : null,
+        labels: labelName ? [labelName] : [], //  Reset labels properly
+      });
+  
+      setIsExpanded(false);
+    }
+  };
+  
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (formRef.current && !formRef.current.contains(event.target)) {
-        setisExpanded(false);
+        setIsExpanded(false);
       }
     };
-    // Add event listener
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      // Cleanup the event listener
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  
 
   return (
     <div className="create-note-container">
-      
       <form className="create-note" ref={formRef}>
-        {isexpanded && (
+        {isExpanded && (
           <input
             type="text"
             name="title"
@@ -93,43 +112,43 @@ const Createnote = ({addNote,labelName}) => {
             value={note.title}
           />
         )}
+
         <textarea
           type="text"
           name="content"
-          placeholder="Take a note..."
+          placeholder={isReminderPath ? "Add a reminder..." : "Take a note..."}
           onClick={expand}
           onChange={handleChange}
           value={note.content}
         />
-        {/* {image upload input} */}
-        {isexpanded &&(
+
+        {isExpanded && (
           <div className="image-upload">
-          <input type='file'
-           accept='image/*' 
-           ref={fileInputRef}
-           style={{display:'none'}}
-          //  hide default file input
-           onChange={handleImageUpload}/>
-           <IconButton onClick={handleIconClick} color='primary'>
-            <ImageIcon/>
-           </IconButton>
+            <input
+              type="file"
+              accept="image/*"
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              onChange={handleImageUpload}
+            />
+            <IconButton onClick={handleIconClick} color="primary">
+              <ImageIcon />
+            </IconButton>
           </div>
         )}
 
-        {/* {image preview} */}
-        {note.image && (
-        <img src={note.image} alt='preview' className="image-preview"/>
-      )}
+        {note.image && !isReminderPath && (
+          <img src={note.image} alt="preview" className="image-preview" />
+        )}
 
-        <Zoom in={isexpanded}>
-          <Fab onClick={submitNote} className="add-button">
-            <AddIcon />
+        <Zoom in={isExpanded}>
+          <Fab onClick={submitNote} className="add-buttons">
+            +
           </Fab>
         </Zoom>
       </form>
-      </div>
-   
+    </div>
   );
 };
 
-export default Createnote;
+export default CreateNote;
