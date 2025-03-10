@@ -50,14 +50,6 @@ function App() {
   }
 
   
-
-  // // note search filter
-  // const filteredNotes = notes.filter(note=>{
-  //   if(!note || !note.title || !note.content) return false;
-  //   return  note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //       note.content.toLowerCase().includes(searchQuery.toLowerCase())
-  // })
-  
   // Remove  reminder notes  from home
   const filteredHomeNotes=notes.filter(
     (note)=>!note.isReminder)

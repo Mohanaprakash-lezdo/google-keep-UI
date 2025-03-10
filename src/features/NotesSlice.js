@@ -38,6 +38,14 @@ const NotesSlice = createSlice({
         });
       }
     },
+    updateNote: (state, action) => {
+      const { id, title, content } = action.payload;
+      const note = state.notes.find((note) => note.id === id);
+      if (note) {
+        note.title = title;
+        note.content = content;
+      }
+    },
     
 
     addReminderNote: (state, action) => {
@@ -281,6 +289,7 @@ export const {
   copyNote,
   copyNoteToLabel,
   setSearchQuery,
+  updateNote
 } = NotesSlice.actions;
 
 export default NotesSlice.reducer;
