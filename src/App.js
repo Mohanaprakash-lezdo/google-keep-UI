@@ -1,4 +1,4 @@
-import {React,useState} from "react";
+import {React,useState,useEffect} from "react";
 import { useSelector,useDispatch } from "react-redux";
 import {addNote,deleteNote,editNote,pinNote,UnarchiveNote,addReminderNote,copyNote, addLabel,restoreNote,permanentDeleteNote,deleteLabel} from './features/NotesSlice'
 import "./App.css";
@@ -14,6 +14,9 @@ import EditLabel from "./Pages/EditLabels/EditLabel";
 import Archive from "./Pages/Archive/Archive";
 import Trash from "./Pages/Trash/Trash";
 import LabelNotes from "./Pages/LabelNotes/LabelNotes";
+import AuthLayout from "./components/auth/AuthLayout";
+import SignIn from './Pages/Signin/SignIn';
+import SignUp from './Pages/SignUp/SignUp';
 // import { LabelSharp } from "@mui/icons-material";
 
 function App() {
@@ -24,6 +27,7 @@ function App() {
   const archivedNotes=useSelector((state)=>state.notes.archivedNotes)
   const labels=useSelector((state)=>state.notes.labels)
   const reminderNotes=useSelector((state)=>state.notes.reminderNotes)
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const navigate=useNavigate();
   const location = useLocation();
   const[isModalOpen,setIsModalOpen]=useState(false);
@@ -83,42 +87,42 @@ function App() {
     navigate('/')
   }
   
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/signin");  // Redirect to Sign In if not logged in
+    }
+  }, [isAuthenticated, navigate,location.pathname]);
 
   return (
     <div className="App">
-      <Header/>
+       {/* Show header only if not on Sign In or Sign Up */}
+       {!["/signin", "/signup"].includes(location.pathname) && <Header />}
       <div className="main-content">
+           {/* Show sidebar only if authenticated */}
+           {isAuthenticated && <Layout labels={labels} openModal={openModal} />}
+      
+           <Routes>
+          {/* Authentication Routes */}
 
-        <Layout labels={labels} openModal={openModal}/>
-        <div className="content">
-          <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/signin" element={<AuthLayout><SignIn /></AuthLayout>}/>
+            <Route path="/signup" element={<AuthLayout><SignUp /></AuthLayout>} />
 
-            <Route path="/Reminder" element={
-              <Reminder 
-              // handleAddNote={handleAddNote}
-              />
-              }
-               />
-            
-            <Route path="/Archive" element={<Archive archivedNote={archivedNotes}
-             UnarchiveNote={(id) => dispatch(UnarchiveNote(id))} />} />
+          {/* Protected Routes (Only accessible when logged in) */}
+          {isAuthenticated ? (
+            <Route element={<Layout labels={labels} openModal={openModal} />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/Reminder" element={<Reminder notes={filteredReminderNotes} />} />
+              <Route path="/Archive" element={<Archive archivedNotes={archivedNotes} UnarchiveNote={(id) => dispatch(UnarchiveNote(id))} />} />
+              <Route path="/Trash" element={<Trash trashedNotes={trashedNotes} restoreNote={(id) => dispatch(restoreNote(id))} permanentDeleteNote={(id) => dispatch(permanentDeleteNote(id))} />} />
+              <Route path="/note/:id" element={<NoteList notes={notes} editNote={(id, updatedNote) => dispatch(editNote({ id, ...updatedNote }))} />} />
+              <Route path="/label/:labelName" element={<LabelNotes notes={notes} addNote={(newNote) => dispatch(addNote(newNote))} deleteNote={(id) => dispatch(deleteNote(id))} editNote={(id, updatedNote) => dispatch(editNote({ id, ...updatedNote }))} pinNote={(id) => dispatch(pinNote(id))} copyNote={(id) => dispatch(copyNote(id))} />} />
+              <Route path="/edit-labels" element={<EditLabel labels={labels} addLabel={(label) => dispatch(addLabel(label))} deleteLabel={(label) => dispatch(deleteLabel(label))} closeModal={closeModal} />} />
+            </Route>
+          ) : (
+            <Route path="*" element={<navigate to="/signin" />} />
+          )}
+        </Routes>
 
-            <Route path="/Trash" element={
-              <Trash
-               trashedNotes={trashedNotes}
-               restoreNote={(id)=>dispatch(restoreNote(id))}
-               permanentDeleteNote={(id)=>dispatch(permanentDeleteNote(id))}
-               />} />
-            <Route path='/note/:id' element={<NoteList notes={notes} editNote={(id, updatedNote) => dispatch(editNote({ id, ...updatedNote }))} />} />
-            <Route path='/label/:labelName' element={
-              <LabelNotes notes={notes} 
-              addNote={handleAddNote}
-              deleteNote={(id)=>dispatch(deleteNote(id))}
-              editNote={editNote}
-              pinNote={handlePinNote}
-              copyNote={handleCopyNote}/>}/>
-          </Routes>
 
           {/* editlabel modal */}
           {isModalOpen &&(
@@ -183,7 +187,6 @@ function App() {
              {isArchive }
         </div>
       </div>
-    </div>
   );
 }
 
