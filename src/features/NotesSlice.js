@@ -48,13 +48,25 @@ const NotesSlice = createSlice({
     },
     
 
+    // addReminderNote: (state, action) => {
+    //   state.reminderNotes.push({
+    //     ...action.payload,
+    //     id: uuidv4(),
+    //     isReminder: action.payload.reminderTime || new Date().toLocaleString(),
+    //   });
+    // },
     addReminderNote: (state, action) => {
-      state.reminderNotes.push({
+      const newReminderNote = {
         ...action.payload,
         id: uuidv4(),
-        isReminder: action.payload.reminderTime || new Date().toLocaleString(),
-      });
+        isReminder: true,  // Boolean flag to indicate it’s a reminder
+        reminderTime: action.payload.reminderTime || new Date().toLocaleString(),
+      };
+    
+      // Add to main notes list to ensure visibility everywhere
+      state.notes.push(newReminderNote);
     },
+    
     
     // delete note
     deleteNote: (state, action) => {

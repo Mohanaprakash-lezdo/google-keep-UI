@@ -7,16 +7,19 @@ import CreateNote from "./components/Createnote/Createnote";
 import NoteList from "./components/NoteList/NoteList";
 // import Sidebar from "./Components/Sidebar/Sidebar";
 import Layout from "./components/Layout/Layout";
-import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate,Navigate } from "react-router-dom";
 import Home from "./Pages/Home/Home";
 import Reminder from "./Pages/Reminder/Reminder";
 import EditLabel from "./Pages/EditLabels/EditLabel";
 import Archive from "./Pages/Archive/Archive";
 import Trash from "./Pages/Trash/Trash";
 import LabelNotes from "./Pages/LabelNotes/LabelNotes";
-import AuthLayout from "./components/auth/AuthLayout";
-import SignIn from './Pages/Signin/SignIn';
+import AuthLayout from "./components/Auth/AuthLayout";
+import SignIn from './Pages/Signin/Sign';
 import SignUp from './Pages/SignUp/SignUp';
+import { signIn,signOut } from "./features/authSlice";  
+// Import signIn action
+
 // import { LabelSharp } from "@mui/icons-material";
 
 function App() {
@@ -86,12 +89,94 @@ function App() {
     setIsModalOpen(false);
     navigate('/')
   }
-  
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate("/signin");  // Redirect to Sign In if not logged in
+
+
+  //  When the app starts, check if user data exists
+  // useEffect(() => {
+  //   const storedUser = JSON.parse(localStorage.getItem("user"));
+  //   const storedAuth = localStorage.getItem("isAuthenticated") === "true";
+
+  //   if (!storedUser || !storedAuth) {
+  //     dispatch(signOut());  
+  //     // Force sign out on restart if no stored session
+  //   } else {
+  //     dispatch(signIn(storedUser));  
+  //     // Restore session only if data exists
+  //   }
+  // }, [dispatch]);
+
+  // //  Redirect to Sign In if not authenticated
+  // useEffect(() => {
+  //   if (!isAuthenticated && !["/signin", "/signup"].includes(location.pathname)) {
+  //     navigate("/signin");
+  //   }
+  // }, [isAuthenticated, navigate, location.pathname]);
+  // Function to start session timeout (1 minute)
+  // const startSessionTimeout = () => {
+  //   sessionStorage.setItem("sessionStartTime", Date.now());
+    
+  //   setTimeout(() => {
+  //     if (isAuthenticated) {
+  //       alert("Session Timed Out");
+  //       dispatch(signOut());
+  //       sessionStorage.removeItem("sessionStartTime");
+  //       navigate("/signin");
+  //     }
+  //   }, 300000);
+  // };
+  let sessionTimeout; // Store timeout globally
+
+  const startSessionTimeout = () => {
+    // Clear existing timeout before setting a new one
+    if (sessionTimeout) {
+      clearTimeout(sessionTimeout);
     }
-  }, [isAuthenticated, navigate,location.pathname]);
+  
+    sessionStorage.setItem("sessionStartTime", Date.now());
+  
+    sessionTimeout = setTimeout(() => {
+      if (isAuthenticated) {
+        alert("Session Timed Out");
+        dispatch(signOut());
+        sessionStorage.removeItem("sessionStartTime");
+        navigate("/signin");
+      }
+    }, 60000); // 1 minute timeout
+  };
+  // On App Load - Restore session or logout if expired
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    const storedAuth = localStorage.getItem("isAuthenticated") === "true";
+    const sessionStartTime = sessionStorage.getItem("sessionStartTime");
+
+    if (!storedUser || !storedAuth) {
+      dispatch(signOut());
+    } else {
+      if (sessionStartTime && Date.now() - sessionStartTime > 60000) {
+        alert("Session Timed Out");
+        dispatch(signOut());
+        sessionStorage.removeItem("sessionStartTime");
+        navigate("/signin");
+      } else {
+        dispatch(signIn(storedUser));
+        startSessionTimeout();
+      }
+    }
+  }, [dispatch]);
+
+  // Reset session timeout on user activity
+  useEffect(() => {
+    if (isAuthenticated) {
+      const resetSessionTimeout = () => startSessionTimeout();
+      window.addEventListener("mousemove", resetSessionTimeout);
+      window.addEventListener("keydown", resetSessionTimeout);
+      return () => {
+        window.removeEventListener("mousemove", resetSessionTimeout);
+        window.removeEventListener("keydown", resetSessionTimeout);
+      };
+    }
+  }, [isAuthenticated]);
+
 
   return (
     <div className="App">
@@ -103,13 +188,14 @@ function App() {
       
            <Routes>
           {/* Authentication Routes */}
-
+            
             <Route path="/signin" element={<AuthLayout><SignIn /></AuthLayout>}/>
             <Route path="/signup" element={<AuthLayout><SignUp /></AuthLayout>} />
 
           {/* Protected Routes (Only accessible when logged in) */}
           {isAuthenticated ? (
-            <Route element={<Layout labels={labels} openModal={openModal} />}>
+            // <Route element={<Layout labels={labels} openModal={openModal} />}>
+            <>
               <Route path="/" element={<Home />} />
               <Route path="/Reminder" element={<Reminder notes={filteredReminderNotes} />} />
               <Route path="/Archive" element={<Archive archivedNotes={archivedNotes} UnarchiveNote={(id) => dispatch(UnarchiveNote(id))} />} />
@@ -117,9 +203,10 @@ function App() {
               <Route path="/note/:id" element={<NoteList notes={notes} editNote={(id, updatedNote) => dispatch(editNote({ id, ...updatedNote }))} />} />
               <Route path="/label/:labelName" element={<LabelNotes notes={notes} addNote={(newNote) => dispatch(addNote(newNote))} deleteNote={(id) => dispatch(deleteNote(id))} editNote={(id, updatedNote) => dispatch(editNote({ id, ...updatedNote }))} pinNote={(id) => dispatch(pinNote(id))} copyNote={(id) => dispatch(copyNote(id))} />} />
               <Route path="/edit-labels" element={<EditLabel labels={labels} addLabel={(label) => dispatch(addLabel(label))} deleteLabel={(label) => dispatch(deleteLabel(label))} closeModal={closeModal} />} />
-            </Route>
+            {/* </Route> */}
+            </>
           ) : (
-            <Route path="*" element={<navigate to="/signin" />} />
+            <Route path="*" element={<Navigate to="/signin" />} />
           )}
         </Routes>
 

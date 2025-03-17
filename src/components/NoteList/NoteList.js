@@ -279,4 +279,3 @@ const NoteList = ({ noteType, labelName }) => {
 };
 
 export default NoteList;
-
