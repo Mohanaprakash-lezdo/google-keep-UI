@@ -31,6 +31,42 @@
 //   );
 // };
 // export default Reminder;
+// import React from "react";
+// import { useSelector, useDispatch } from "react-redux";
+// import CreateNote from "../../components/Createnote/Createnote";
+// import NoteList from "../../components/NoteList/NoteList";
+// import { addReminderNote } from "../../features/NotesSlice";
+
+// const Reminder = () => {
+//   const dispatch = useDispatch();
+//   const notes = useSelector((state) => state.notes.notes); // Get all notes
+
+//   // Filter out notes that have a reminder
+//   const reminderNotes = notes.filter((note) => note.isReminder);
+
+//   console.log("Reminder Notes:", reminderNotes);
+
+//   // Function to add a reminder note
+//   const handleAddReminderNote = (newNote) => {
+//     if (newNote.title || newNote.content) {
+//       dispatch(addReminderNote({ ...newNote, isReminder: true }));
+//     }
+//   };
+
+//   return (
+//     <div>
+//       <h2>Reminders</h2>
+//       <CreateNote onAddNote={handleAddReminderNote} isReminder={true} />
+//       {reminderNotes.length > 0 ? (
+//         <NoteList notes={reminderNotes} noteType="reminder" />
+//       ) : (
+//         <p>No reminders yet!</p>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default Reminder;
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import CreateNote from "../../components/Createnote/Createnote";
@@ -39,14 +75,15 @@ import { addReminderNote } from "../../features/NotesSlice";
 
 const Reminder = () => {
   const dispatch = useDispatch();
-  const notes = useSelector((state) => state.notes.notes); // Get all notes
 
-  // Filter out notes that have a reminder
-  const reminderNotes = notes.filter((note) => note.isReminder);
+  // ✅ Fix: Select reminder notes from state.notes.notes
+  const reminderNotes = useSelector((state) => 
+    state.notes.notes.filter(note => note.isReminder)
+  );
 
   console.log("Reminder Notes:", reminderNotes);
 
-  // Function to add a reminder note
+  // ✅ Fix: Ensure new reminders are added correctly
   const handleAddReminderNote = (newNote) => {
     if (newNote.title || newNote.content) {
       dispatch(addReminderNote({ ...newNote, isReminder: true }));
@@ -57,6 +94,7 @@ const Reminder = () => {
     <div>
       <h2>Reminders</h2>
       <CreateNote onAddNote={handleAddReminderNote} isReminder={true} />
+
       {reminderNotes.length > 0 ? (
         <NoteList notes={reminderNotes} noteType="reminder" />
       ) : (
