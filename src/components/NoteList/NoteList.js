@@ -279,11 +279,261 @@
 // };
 
 // export default NoteList;
+// import React, { useEffect, useState } from "react";
+// import { useNavigate, useParams } from "react-router-dom";
+// import { useSelector, useDispatch } from "react-redux";
+// import Note from "../Note/Note";
+// import { permanentDeleteNote,copyNote } from "../../features/NotesSlice";
+// import "./NoteList.css";
+
+// const NoteList = ({ noteType, labelName }) => {
+//   const navigate = useNavigate();
+//   const dispatch = useDispatch();
+//   const { id } = useParams();
+
+//   // Get all notes from Redux state
+//   const allNotes = useSelector((state) => state.notes.notes) || [];
+//   const archivedNotes = useSelector((state) => state.notes.archivedNotes) || [];
+//   const labels = useSelector((state) => state.notes.labels) || {};
+
+//   // State to store displayed notes
+//   const [displayNotes, setDisplayNotes] = useState([]);
+
+//   useEffect(() => {
+//     let filteredNotes = [];
+
+//     if (noteType === "reminder") {
+//       filteredNotes = allNotes.filter((note) => note.isReminder); //  Fix: Get reminders from `allNotes`
+//     } else if (noteType === "archive") {
+//       filteredNotes = archivedNotes;
+//     } else if (labelName) {
+//       filteredNotes = allNotes.filter((note) => note.labels.includes(labelName));
+//       //  //  Fix: Filter notes by label
+//       // filteredNotes = labels[labelName] || [];
+//       // filteredNotes = labels[labelName] ? [...labels[labelName]] : [];
+//     } else {
+//       // filteredNotes = allNotes.filter((note) => !note.isReminder && !note.isArchived);
+//       // filteredNotes = allNotes.filter((note) => note.labels.length === 0);
+//       // filteredNotes = allNotes.filter((note) => !note.isReminder && !note.isArchived);
+//       filteredNotes = allNotes.filter((note) => note.labels.length === 0 && !note.isArchived);
+//     }
+
+//     setDisplayNotes(filteredNotes);
+//     console.log(` Displaying notes for ${labelName || "Home"}:`, filteredNotes);
+//   }, [noteType, labelName, allNotes, archivedNotes, labels]);
+
+//   // Handle permanent delete
+//   const handleDelete = (e, noteId) => {
+//     e.stopPropagation();
+//     dispatch(permanentDeleteNote(noteId));
+//   };
+
+//    // Handle copying a note while ensuring it stays in the correct label
+//    const handleCopyNote = (noteId) => {
+//     dispatch(copyNote({ noteId, labelName })); //  Ensure copied note retains label
+//   };
+
+//   return (
+//     <div className="note-list">
+//       {displayNotes.length > 0 ? (
+//         displayNotes.map((note) => (
+//           <div key={note.id} className="note-item">
+//             <Note id={note.id} 
+//             onCopy={()=>handleCopyNote(note.id)}/>
+//           </div>
+//         ))
+//       ) : (
+//         <p className="empty-message">No notes available</p>
+//       )}
+
+//       {/* Modal for selected note */}
+//       {id && (
+//         <div className="modal-overlay" onClick={() => navigate("/")}>
+//           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+//             <Note id={id} />
+//             <button className="close-btn" onClick={() => navigate("/")}>
+//               Close
+//             </button>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default NoteList;
+// import React, { useEffect, useState } from "react";
+// import { useNavigate, useParams } from "react-router-dom";
+// import { useSelector, useDispatch } from "react-redux";
+// import Note from "../Note/Note";
+// import { permanentDeleteNote, copyNote } from "../../features/NotesSlice";
+// import "./NoteList.css";
+
+// const NoteList = ({ noteType, labelName }) => {
+//   const navigate = useNavigate();
+//   const dispatch = useDispatch();
+//   const { id } = useParams();
+
+//   // Get current user ID
+//   const currentUser = useSelector((state) => state.notes.currentUser);
+  
+//   // Get notes for the logged-in user
+//   const allNotes = useSelector((state) => state.notes.notes?.[currentUser]) || {};
+//   const archivedNotes = useSelector((state) => state.notes.archivedNotes?.[currentUser]) || {};
+//   const labels = useSelector((state) => state.notes.labels?.[currentUser]) || {};
+
+//   // State to store displayed notes
+//   const [displayNotes, setDisplayNotes] = useState([]);
+
+//   useEffect(() => {
+//     let filteredNotes = Object.values(allNotes); // Convert notes object to array
+
+//     if (noteType === "reminder") {
+//       filteredNotes = filteredNotes.filter((note) => note.isReminder);
+//     } else if (noteType === "archive") {
+//       filteredNotes = Object.values(archivedNotes); // Get archived notes as array
+//     } else if (labelName) {
+//       filteredNotes = filteredNotes.filter((note) => note.labels?.includes(labelName));
+//     } else {
+//       filteredNotes = filteredNotes.filter((note) => note.labels?.length === 0 && !note.isArchived);
+//     }
+
+//     setDisplayNotes(filteredNotes);
+//     console.log(`Displaying notes for ${labelName || "Home"}:`, filteredNotes);
+//   }, [noteType, labelName, allNotes, archivedNotes, labels]);
+
+//   // Handle permanent delete
+//   const handleDelete = (e, noteId) => {
+//     e.stopPropagation();
+//     dispatch(permanentDeleteNote({ userId: currentUser, noteId }));
+//   };
+
+//   // Handle copying a note while ensuring it stays in the correct label
+//   const handleCopyNote = (noteId) => {
+//     dispatch(copyNote({ userId: currentUser, noteId, labelName }));
+//   };
+
+//   return (
+//     <div className="note-list">
+//       {displayNotes.length > 0 ? (
+//         displayNotes.map((note) => (
+//           <div key={note.id} className="note-item">
+//             <Note id={note.id} onCopy={() => handleCopyNote(note.id)} />
+//           </div>
+//         ))
+//       ) : (
+//         <p className="empty-message">No notes available</p>
+//       )}
+
+//       {/* Modal for selected note */}
+//       {id && (
+//         <div className="modal-overlay" onClick={() => navigate("/")}>
+//           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+//             <Note id={id} />
+//             <button className="close-btn" onClick={() => navigate("/")}>Close</button>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default NoteList;
+
+// import React, { useEffect, useState } from "react";
+// import { useNavigate, useParams } from "react-router-dom";
+// import { useSelector, useDispatch } from "react-redux";
+// import Note from "../Note/Note";
+// import { permanentDeleteNote, copyNote } from "../../features/NotesSlice";
+// import "./NoteList.css";
+
+// const NoteList = ({ noteType, labelName }) => {
+//   const navigate = useNavigate();
+//   const dispatch = useDispatch();
+//   const { id } = useParams();
+
+//   // Get current user ID
+//   const currentUser = useSelector((state) => state.notes.userId);
+//   console.log("Current User:", currentUser);
+
+//   // ✅ FIX: Convert object to array
+//   const allNotes = useSelector((state) =>
+//     state.notes.notes ? Object.values(state.notes.notes) : []
+//   );
+//   const archivedNotes = useSelector((state) =>
+//     state.notes.archivedNotes ? Object.values(state.notes.archivedNotes) : []
+//   );
+//   const labels = useSelector((state) => state.notes.labels) || {};
+
+//   console.log("All Notes from Redux:", allNotes);
+
+//   // ✅ State for filtered notes
+//   const [displayNotes, setDisplayNotes] = useState([]);
+
+//   useEffect(() => {
+//     let filteredNotes = [...allNotes];
+
+//     if (noteType === "reminder") {
+//       filteredNotes = filteredNotes.filter((note) => note.isReminder);
+//     } else if (noteType === "archive") {
+//       filteredNotes = [...archivedNotes];
+//     } else if (labelName) {
+//       filteredNotes = filteredNotes.filter((note) => note.labels?.includes(labelName));
+//     } else {
+//       filteredNotes = filteredNotes.filter((note) => !note.isArchived && note.labels?.length === 0);
+//     }
+
+//     // Update state only if the new array is different
+//     if (JSON.stringify(displayNotes) !== JSON.stringify(filteredNotes)) {
+//       setDisplayNotes(filteredNotes);
+//       console.log("Updated Display Notes:", filteredNotes);
+//     }
+//   }, [noteType, labelName, allNotes, archivedNotes]);
+
+//   // Handle permanent delete
+//   const handleDelete = (e, noteId) => {
+//     e.stopPropagation();
+//     dispatch(permanentDeleteNote({ userId: currentUser, noteId }));
+//   };
+
+//   // Handle copying a note
+//   const handleCopyNote = (noteId) => {
+//     dispatch(copyNote({ userId: currentUser, noteId, labelName }));
+//   };
+
+//   return (
+//     <div className="note-list">
+//       {console.log("Rendering Display Notes:", displayNotes)}
+
+//       {displayNotes.length > 0 ? (
+//         displayNotes.map((note) => (
+//           <div key={note.id} className="note-item">
+//             <Note id={note.id} noteData={note} />
+//           </div>
+//         ))
+//       ) : (
+//         <p className="empty-message">No notes available</p>
+//       )}
+
+//       {/* Modal for selected note */}
+//       {id && (
+//         <div className="modal-overlay" onClick={() => navigate("/")}>
+//           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+//             <Note id={id} noteData={displayNotes.find((note) => note.id === id)} />
+//             <button className="close-btn" onClick={() => navigate("/")}>Close</button>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default NoteList;
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import Note from "../Note/Note";
-import { permanentDeleteNote } from "../../features/NotesSlice";
+import { permanentDeleteNote, copyNote } from "../../features/NotesSlice";
 import "./NoteList.css";
 
 const NoteList = ({ noteType, labelName }) => {
@@ -291,39 +541,59 @@ const NoteList = ({ noteType, labelName }) => {
   const dispatch = useDispatch();
   const { id } = useParams();
 
-  // Get all notes from Redux state
-  const allNotes = useSelector((state) => state.notes.notes) || [];
-  const archivedNotes = useSelector((state) => state.notes.archivedNotes) || [];
-  const labels = useSelector((state) => state.notes.labels) || {};
+  // Get the current user ID
+  const currentUser = useSelector((state) => state.notes.userId);
+  console.log("Current User:", currentUser);
 
-  // State to store displayed notes
+  // Get only the current user's notes
+  const allNotes = useSelector((state) => state.notes.notes?.[currentUser] || {});
+  const archivedNotes = useSelector((state) => state.notes.archivedNotes?.[currentUser] || {});
+  const labels = useSelector((state) => state.notes.labels?.[currentUser] || {});
+
+  // Convert notes object to an array
+  const allNotesArray = Object.values(allNotes);
+  const archivedNotesArray = Object.values(archivedNotes);
+
+  console.log("All Notes from Redux:", allNotesArray);
+
+  // ✅ State for filtered notes
   const [displayNotes, setDisplayNotes] = useState([]);
 
   useEffect(() => {
-    let filteredNotes = [];
+    let filteredNotes = [...allNotesArray];
 
     if (noteType === "reminder") {
-      filteredNotes = allNotes.filter((note) => note.isReminder); // ✅ Fix: Get reminders from `allNotes`
+      filteredNotes = filteredNotes.filter((note) => note.isReminder);
     } else if (noteType === "archive") {
-      filteredNotes = archivedNotes;
+      filteredNotes = [...archivedNotesArray];
     } else if (labelName) {
-      filteredNotes = allNotes.filter((note) => note.labels?.includes(labelName)); // ✅ Fix: Filter notes by label
+      filteredNotes = filteredNotes.filter((note) => note.labels?.includes(labelName));
     } else {
-      filteredNotes = allNotes.filter((note) => !note.isReminder && !note.isArchived);
+      filteredNotes = filteredNotes.filter((note) => !note.isArchived && note.labels?.length === 0);
     }
 
-    setDisplayNotes(filteredNotes);
-    console.log(`📝 Displaying notes for ${labelName || "Home"}:`, filteredNotes);
-  }, [noteType, labelName, allNotes, archivedNotes, labels]);
+    // Update state only if the new array is different
+    if (JSON.stringify(displayNotes) !== JSON.stringify(filteredNotes)) {
+      setDisplayNotes(filteredNotes);
+      console.log("Updated Display Notes:", filteredNotes);
+    }
+  }, [noteType, labelName, allNotesArray, archivedNotesArray]);
 
   // Handle permanent delete
   const handleDelete = (e, noteId) => {
     e.stopPropagation();
-    dispatch(permanentDeleteNote(noteId));
+    dispatch(permanentDeleteNote({ userId: currentUser, noteId }));
+  };
+
+  // Handle copying a note
+  const handleCopyNote = (noteId) => {
+    dispatch(copyNote({ userId: currentUser, noteId, labelName }));
   };
 
   return (
     <div className="note-list">
+      {console.log("Rendering Display Notes:", displayNotes)}
+
       {displayNotes.length > 0 ? (
         displayNotes.map((note) => (
           <div key={note.id} className="note-item">
@@ -339,9 +609,7 @@ const NoteList = ({ noteType, labelName }) => {
         <div className="modal-overlay" onClick={() => navigate("/")}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <Note id={id} />
-            <button className="close-btn" onClick={() => navigate("/")}>
-              Close
-            </button>
+            <button className="close-btn" onClick={() => navigate("/")}>Close</button>
           </div>
         </div>
       )}

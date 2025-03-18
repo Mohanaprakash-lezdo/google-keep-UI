@@ -67,23 +67,109 @@
 // };
 
 // export default Reminder;
+// import React from "react";
+// import { useSelector, useDispatch } from "react-redux";
+// import CreateNote from "../../components/Createnote/Createnote";
+// import NoteList from "../../components/NoteList/NoteList";
+// import { addReminderNote } from "../../features/NotesSlice";
+
+// const Reminder = () => {
+//   const dispatch = useDispatch();
+
+//   // ✅ Fix: Select reminder notes from state.notes.notes
+//   const reminderNotes = useSelector((state) => 
+//     state.notes.notes.filter(note => note.isReminder)
+//   );
+
+//   console.log("Reminder Notes:", reminderNotes);
+
+//   // ✅ Fix: Ensure new reminders are added correctly
+//   const handleAddReminderNote = (newNote) => {
+//     if (newNote.title || newNote.content) {
+//       dispatch(addReminderNote({ ...newNote, isReminder: true }));
+//     }
+//   };
+
+//   return (
+//     <div>
+//       <h2>Reminders</h2>
+//       <CreateNote onAddNote={handleAddReminderNote} isReminder={true} />
+
+//       {reminderNotes.length > 0 ? (
+//         <NoteList notes={reminderNotes} noteType="reminder" />
+//       ) : (
+//         <p>No reminders yet!</p>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default Reminder;
+// import React from "react";
+// import { useSelector, useDispatch } from "react-redux";
+// import CreateNote from "../../components/Createnote/Createnote";
+// import { addReminderNote } from "../../features/NotesSlice";
+// import "./Reminder.css"; // Optional for better styling
+
+// const Reminder = () => {
+//   const dispatch = useDispatch();
+//   const reminderNotes = useSelector((state) =>
+//     state.notes.notes.filter((note) => note.isReminder) // ✅ Filter reminder notes
+//   );
+
+//   console.log(reminderNotes);
+
+//   // Function to add reminder notes
+//   const handleAddReminderNote = (newNote) => {
+//     if (newNote.title || newNote.content) {
+//       dispatch(addReminderNote({ ...newNote, isReminder: true }));
+//     }
+//   };
+
+//   return (
+//     <div className="reminder-container">
+//       <h2>Reminders</h2>
+//       <CreateNote onAddNote={handleAddReminderNote} isReminder={true} />
+      
+//       {reminderNotes.length > 0 ? (
+//         <div className="reminder-list">
+//           {reminderNotes.map((note) => (
+//             <div key={note.id} className="reminder-note">
+//               <p className="note-title">{note.title}</p>
+//               {/* <p className="note-content">{note.content}</p> */}
+//               <p className="reminder-time">⏰ Reminder: {note.reminderTime}</p>
+//             </div>
+//           ))}
+//         </div>
+//       ) : (
+//         <p>No reminders yet!</p>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default Reminder;
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import CreateNote from "../../components/Createnote/Createnote";
-import NoteList from "../../components/NoteList/NoteList";
 import { addReminderNote } from "../../features/NotesSlice";
+import "./Reminder.css"; // Optional for better styling
 
 const Reminder = () => {
   const dispatch = useDispatch();
 
-  // ✅ Fix: Select reminder notes from state.notes.notes
-  const reminderNotes = useSelector((state) => 
-    state.notes.notes.filter(note => note.isReminder)
-  );
+  // Get the current logged-in user
+  const currentUser = useSelector((state) => state.notes.userId);
+
+  // Ensure notes exist for the user, then filter reminder notes
+  const reminderNotes = useSelector((state) => {
+    const userNotes = state.notes.notes?.[currentUser] || []; // ✅ Get only current user’s notes
+    return userNotes.filter((note) => note.isReminder); // ✅ Filter reminder notes
+  });
 
   console.log("Reminder Notes:", reminderNotes);
 
-  // ✅ Fix: Ensure new reminders are added correctly
+  // Function to add reminder notes
   const handleAddReminderNote = (newNote) => {
     if (newNote.title || newNote.content) {
       dispatch(addReminderNote({ ...newNote, isReminder: true }));
@@ -91,12 +177,19 @@ const Reminder = () => {
   };
 
   return (
-    <div>
+    <div className="reminder-container">
       <h2>Reminders</h2>
       <CreateNote onAddNote={handleAddReminderNote} isReminder={true} />
-
+      
       {reminderNotes.length > 0 ? (
-        <NoteList notes={reminderNotes} noteType="reminder" />
+        <div className="reminder-list">
+          {reminderNotes.map((note) => (
+            <div key={note.id} className="reminder-note">
+              <p className="note-title">{note.title}</p>
+              <p className="reminder-time">⏰ Reminder: {note.reminderTime || "No time set"}</p>
+            </div>
+          ))}
+        </div>
       ) : (
         <p>No reminders yet!</p>
       )}
@@ -105,3 +198,4 @@ const Reminder = () => {
 };
 
 export default Reminder;
+

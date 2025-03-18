@@ -16,7 +16,8 @@
 
 .main-content {
   display: flex;
-  flex: 1;
+  /* flex: 1; */
+  /* justify-content: center; */
 }
 
 /* Ensure Auth Pages are centered */
