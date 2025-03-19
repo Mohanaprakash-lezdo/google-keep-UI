@@ -322,9 +322,334 @@
 
 // export default App;
 
-import { React, useState, useEffect } from "react";
+// import { React, useState, useEffect } from "react";
+// import { useSelector, useDispatch } from "react-redux";
+// import { addNote, deleteNote, editNote, pinNote, UnarchiveNote, addReminderNote, copyNote, addLabel, restoreNote, permanentDeleteNote, deleteLabel } from './features/NotesSlice';
+// import "./App.css";
+// import Header from "./components/Header/Header";
+// import Layout from "./components/Layout/Layout";
+// import { Routes, Route, useLocation, useNavigate, Navigate } from "react-router-dom";
+// import Home from "./Pages/Home/Home";
+// import Reminder from "./Pages/Reminder/Reminder";
+// import EditLabel from "./Pages/EditLabels/EditLabel";
+// import Archive from "./Pages/Archive/Archive";
+// import Trash from "./Pages/Trash/Trash";
+// import LabelNotes from "./Pages/LabelNotes/LabelNotes";
+// import AuthLayout from "./components/Auth/AuthLayout";
+// import SignIn from './Pages/Signin/Sign';
+// import SignUp from './Pages/SignUp/SignUp';
+// import { signIn, signOut } from "./features/authSlice";
+// import NoteList from "./components/NoteList/NoteList";
+
+// function App() {
+//   const dispatch = useDispatch();
+//   const navigate = useNavigate();
+//   const location = useLocation();
+  
+//   const currentUser = useSelector((state) => state.auth?.user);
+//   const userId = currentUser?.id;
+//   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+
+//   // Fetch notes as arrays
+//   const notes = useSelector((state) => state.notes[userId]?.notes || []);
+//   const trashedNotes = useSelector((state) => state.notes[userId]?.trashedNotes || []);
+//   const archivedNotes = useSelector((state) => state.notes[userId]?.archivedNotes || []);
+//   const labels = useSelector((state) => state.notes[userId]?.labels || {});
+//   const reminderNotes = useSelector((state) => state.notes[userId]?.reminderNotes || []);
+
+//   const [isModalOpen, setIsModalOpen] = useState(false);
+
+//   // Filtered notes
+//   const filteredHomeNotes = notes.filter((note) => !note.isReminder);
+//   const filteredReminderNotes = reminderNotes.filter((note) => note.isReminder);
+
+//   // Separate pinned and unpinned notes
+//   const pinnedNotes = filteredHomeNotes.filter((note) => note.isPinned);
+//   const unpinnedNotes = filteredHomeNotes.filter((note) => !note.isPinned);
+
+//   const isTrash = location.pathname === '/Trash';
+//   const isArchive = location.pathname === '/Archive';
+//   const isHome = location.pathname === '/';
+
+//   const closeModal = () => {
+//     setIsModalOpen(false);
+//     navigate('/');
+//   };
+//   useEffect(() => {
+//     let timeout;
+
+//     const checkSession = () => {
+//       const sessionStartTime = sessionStorage.getItem("sessionStartTime");
+
+//       if (sessionStartTime) {
+//         const elapsedTime = Date.now() - parseInt(sessionStartTime, 10);
+
+//         if (elapsedTime >= 5 * 60 * 1000) { // 5 minutes
+//           alert("Session timed out");
+//           handleLogout();
+//         }
+//       }
+//     };
+
+//     const resetTimeout = () => {
+//       clearTimeout(timeout);
+//       sessionStorage.setItem("sessionStartTime", Date.now().toString());
+
+//       timeout = setTimeout(() => {
+//         alert("Session timed out");
+//         handleLogout();
+//       }, 5 * 60 * 1000);
+//     };
+
+//     const handleLogout = () => {
+//       dispatch(signOut());
+//       sessionStorage.removeItem("sessionStartTime");
+//       navigate("/signin");
+//     };
+
+//     if (isAuthenticated) {
+//       checkSession();
+//       resetTimeout();
+//       window.addEventListener("mousemove", resetTimeout);
+//       window.addEventListener("keydown", resetTimeout);
+//     }
+
+//     return () => {
+//       clearTimeout(timeout);
+//       window.removeEventListener("mousemove", resetTimeout);
+//       window.removeEventListener("keydown", resetTimeout);
+//     };
+//   }, [isAuthenticated, dispatch, navigate]);
+
+
+
+//   return (
+//     <div className="App">
+//       {!["/signin", "/signup"].includes(location.pathname) && <Header />}
+//       <div className="main-content">
+//         {isAuthenticated && <Layout labels={labels} openModal={() => setIsModalOpen(true)} />}
+        
+//         <Routes>
+//           <Route path="/signin" element={<AuthLayout><SignIn /></AuthLayout>} />
+//           <Route path="/signup" element={<AuthLayout><SignUp /></AuthLayout>} />
+
+//           {isAuthenticated ? (
+//             <>
+//               <Route path="/" element={<Home />} />
+//               <Route path="/Reminder" element={<Reminder notes={filteredReminderNotes} />} />
+//               <Route path="/Archive" element={<Archive archivedNotes={archivedNotes} UnarchiveNote={(id) => dispatch(UnarchiveNote({ userId, id }))} />} />
+//               <Route path="/Trash" element={<Trash trashedNotes={trashedNotes} restoreNote={(id) => dispatch(restoreNote({ userId, id }))} permanentDeleteNote={(id) => dispatch(permanentDeleteNote({ userId, id }))} />} />
+//               <Route path="/note/:id" element={<NoteList notes={notes} editNote={(id, updatedNote) => dispatch(editNote({ userId, id, ...updatedNote }))} />} />
+//               <Route path="/label/:labelName" element={<LabelNotes notes={notes} />} />
+//               <Route path="/edit-labels" element={<EditLabel labels={labels} addLabel={(label) => dispatch(addLabel({ userId, label }))} deleteLabel={(label) => dispatch(deleteLabel({ userId, label }))} closeModal={closeModal} />} />
+//             </>
+//           ) : (
+//             <Route path="*" element={<Navigate to="/signin" />} />
+//           )}
+//         </Routes>
+
+//         {isModalOpen && (
+//           <EditLabel
+//             labels={labels}
+//             addLabel={(label) => dispatch(addLabel({ userId, label }))}
+//             deleteLabel={(label) => dispatch(deleteLabel({ userId, label }))}
+//             closeModal={closeModal}
+//           />
+//         )}
+
+//         {isHome && (
+//           <>
+//             {pinnedNotes.length > 0 && (
+//               <>
+//                 <h2>Pinned</h2>
+//                 <NoteList notes={pinnedNotes} deleteNote={(id) => dispatch(deleteNote({ userId, id }))} pinNote={(id) => dispatch(pinNote({ userId, id }))} />
+//               </>
+//             )}
+//             {pinnedNotes.length > 0 && unpinnedNotes.length > 0 && (
+//               <>
+//                 <h2>Others</h2>
+//                 <NoteList notes={unpinnedNotes} deleteNote={(id) => dispatch(deleteNote({ userId, id }))} pinNote={(id) => dispatch(pinNote({ userId, id }))} />
+//               </>
+//             )}
+//             {pinnedNotes.length === 0 && unpinnedNotes.length > 0 && (
+//               <NoteList notes={unpinnedNotes} deleteNote={(id) => dispatch(deleteNote({ userId, id }))} pinNote={(id) => dispatch(pinNote({ userId, id }))} />
+//             )}
+//           </>
+//         )}
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default App;
+// import { React, useState, useEffect } from "react";
+// import { useSelector, useDispatch } from "react-redux";
+// import { 
+//   addNote, deleteNote, editNote, pinNote, UnarchiveNote, 
+//   addReminderNote, copyNote, addLabel, restoreNote, 
+//   permanentDeleteNote, deleteLabel 
+// } from './features/NotesSlice';
+// import "./App.css";
+// import Header from "./components/Header/Header";
+// import Layout from "./components/Layout/Layout";
+// import { Routes, Route, useLocation, useNavigate, Navigate } from "react-router-dom";
+// import Home from "./Pages/Home/Home";
+// import Reminder from "./Pages/Reminder/Reminder";
+// import EditLabel from "./Pages/EditLabels/EditLabel";
+// import Archive from "./Pages/Archive/Archive";
+// import Trash from "./Pages/Trash/Trash";
+// import LabelNotes from "./Pages/LabelNotes/LabelNotes";
+// import AuthLayout from "./components/Auth/AuthLayout";
+// import SignIn from './Pages/Signin/Sign';
+// import SignUp from './Pages/SignUp/SignUp';
+// import { signIn, signOut } from "./features/authSlice";
+// import NoteList from "./components/NoteList/NoteList";
+
+// function App() {
+//   const dispatch = useDispatch();
+//   const navigate = useNavigate();
+//   const location = useLocation();
+
+//   const currentUser = useSelector((state) => state.auth?.user);
+//   const userId = currentUser?.id;
+//   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+
+//   // Fetch only the current user's notes
+//   const userNotes = useSelector((state) => state.notes[userId] || {});
+//   const { notes = [], trashedNotes = [], archivedNotes = [], labels = {}, reminderNotes = [] } = userNotes;
+
+//   const [isModalOpen, setIsModalOpen] = useState(false);
+
+//   // Filtered notes
+//   const filteredHomeNotes = notes.filter((note) => !note.isReminder);
+//   const filteredReminderNotes = reminderNotes.filter((note) => note.isReminder);
+
+//   // Separate pinned and unpinned notes
+//   const pinnedNotes = filteredHomeNotes.filter((note) => note.isPinned);
+//   const unpinnedNotes = filteredHomeNotes.filter((note) => !note.isPinned);
+
+//   const isTrash = location.pathname === '/Trash';
+//   const isArchive = location.pathname === '/Archive';
+//   const isHome = location.pathname === '/';
+
+//   const closeModal = () => {
+//     setIsModalOpen(false);
+//     navigate('/');
+//   };
+
+//   // Session timeout logic
+//   useEffect(() => {
+//     let timeout;
+
+//     const checkSession = () => {
+//       const sessionStartTime = sessionStorage.getItem("sessionStartTime");
+
+//       if (sessionStartTime) {
+//         const elapsedTime = Date.now() - parseInt(sessionStartTime, 10);
+
+//         if (elapsedTime >= 5 * 60 * 1000) { // 5 minutes
+//           alert("Session timed out");
+//           handleLogout();
+//         }
+//       }
+//     };
+
+//     const resetTimeout = () => {
+//       clearTimeout(timeout);
+//       sessionStorage.setItem("sessionStartTime", Date.now().toString());
+
+//       timeout = setTimeout(() => {
+//         alert("Session timed out");
+//         handleLogout();
+//       }, 5 * 60 * 1000);
+//     };
+
+//     const handleLogout = () => {
+//       dispatch(signOut());
+//       sessionStorage.removeItem("sessionStartTime");
+//       navigate("/signin");
+//     };
+
+//     if (isAuthenticated) {
+//       checkSession();
+//       resetTimeout();
+//       window.addEventListener("mousemove", resetTimeout);
+//       window.addEventListener("keydown", resetTimeout);
+//     }
+
+//     return () => {
+//       clearTimeout(timeout);
+//       window.removeEventListener("mousemove", resetTimeout);
+//       window.removeEventListener("keydown", resetTimeout);
+//     };
+//   }, [isAuthenticated, dispatch, navigate]);
+
+//   return (
+//     <div className="App">
+//       {!["/signin", "/signup"].includes(location.pathname) && <Header />}
+//       <div className="main-content">
+//         {isAuthenticated && <Layout labels={labels} openModal={() => setIsModalOpen(true)} />}
+        
+//         <Routes>
+//           <Route path="/signin" element={<AuthLayout><SignIn /></AuthLayout>} />
+//           <Route path="/signup" element={<AuthLayout><SignUp /></AuthLayout>} />
+
+//           {isAuthenticated ? (
+//             <>
+//               <Route path="/" element={<Home />} />
+//               <Route path="/Reminder" element={<Reminder notes={filteredReminderNotes} />} />
+//               <Route path="/Archive" element={<Archive archivedNotes={archivedNotes} UnarchiveNote={(id) => dispatch(UnarchiveNote({ userId, id }))} />} />
+//               <Route path="/Trash" element={<Trash trashedNotes={trashedNotes} restoreNote={(id) => dispatch(restoreNote({ userId, id }))} permanentDeleteNote={(id) => dispatch(permanentDeleteNote({ userId, id }))} />} />
+//               <Route path="/note/:id" element={<NoteList notes={notes} editNote={(id, updatedNote) => dispatch(editNote({ userId, id, ...updatedNote }))} />} />
+//               <Route path="/label/:labelName" element={<LabelNotes notes={notes} />} />
+//               <Route path="/edit-labels" element={<EditLabel labels={labels} addLabel={(label) => dispatch(addLabel({ userId, label }))} deleteLabel={(label) => dispatch(deleteLabel({ userId, label }))} closeModal={closeModal} />} />
+//             </>
+//           ) : (
+//             <Route path="*" element={<Navigate to="/signin" />} />
+//           )}
+//         </Routes>
+
+//         {isModalOpen && (
+//           <EditLabel
+//             labels={labels}
+//             addLabel={(label) => dispatch(addLabel({ userId, label }))} 
+//             deleteLabel={(label) => dispatch(deleteLabel({ userId, label }))} 
+//             closeModal={closeModal}
+//           />
+//         )}
+
+//         {isHome && (
+//           <>
+//             {pinnedNotes.length > 0 && (
+//               <>
+//                 <h2>Pinned</h2>
+//                 <NoteList notes={pinnedNotes} deleteNote={(id) => dispatch(deleteNote({ userId, id }))} pinNote={(id) => dispatch(pinNote({ userId, id }))} />
+//               </>
+//             )}
+//             {pinnedNotes.length > 0 && unpinnedNotes.length > 0 && (
+//               <>
+//                 <h2>Others</h2>
+//                 <NoteList notes={unpinnedNotes} deleteNote={(id) => dispatch(deleteNote({ userId, id }))} pinNote={(id) => dispatch(pinNote({ userId, id }))} />
+//               </>
+//             )}
+//             {pinnedNotes.length === 0 && unpinnedNotes.length > 0 && (
+//               <NoteList notes={unpinnedNotes} deleteNote={(id) => dispatch(deleteNote({ userId, id }))} pinNote={(id) => dispatch(pinNote({ userId, id }))} />
+//             )}
+//           </>
+//         )}
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default App;
+import { React, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { addNote, deleteNote, editNote, pinNote, UnarchiveNote, addReminderNote, copyNote, addLabel, restoreNote, permanentDeleteNote, deleteLabel } from './features/NotesSlice';
+import { 
+  addNote, deleteNote, editNote, pinNote, UnarchiveNote, 
+  addReminderNote, copyNote, addLabel, restoreNote, 
+  permanentDeleteNote, deleteLabel 
+} from './features/NotesSlice';
 import "./App.css";
 import Header from "./components/Header/Header";
 import Layout from "./components/Layout/Layout";
@@ -338,24 +663,20 @@ import LabelNotes from "./Pages/LabelNotes/LabelNotes";
 import AuthLayout from "./components/Auth/AuthLayout";
 import SignIn from './Pages/Signin/Sign';
 import SignUp from './Pages/SignUp/SignUp';
-import { signIn, signOut } from "./features/authSlice";
 import NoteList from "./components/NoteList/NoteList";
 
 function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   const currentUser = useSelector((state) => state.auth?.user);
   const userId = currentUser?.id;
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
-  // Fetch notes as arrays
-  const notes = useSelector((state) => state.notes[userId]?.notes || []);
-  const trashedNotes = useSelector((state) => state.notes[userId]?.trashedNotes || []);
-  const archivedNotes = useSelector((state) => state.notes[userId]?.archivedNotes || []);
-  const labels = useSelector((state) => state.notes[userId]?.labels || {});
-  const reminderNotes = useSelector((state) => state.notes[userId]?.reminderNotes || []);
+  // Fetch only the current user's notes
+  const userNotes = useSelector((state) => state.notes[userId] || {});
+  const { notes = [], trashedNotes = [], archivedNotes = [], labels = {}, reminderNotes = [] } = userNotes;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -375,53 +696,6 @@ function App() {
     setIsModalOpen(false);
     navigate('/');
   };
-  useEffect(() => {
-    let timeout;
-
-    const checkSession = () => {
-      const sessionStartTime = sessionStorage.getItem("sessionStartTime");
-
-      if (sessionStartTime) {
-        const elapsedTime = Date.now() - parseInt(sessionStartTime, 10);
-
-        if (elapsedTime >= 5 * 60 * 1000) { // 5 minutes
-          alert("Session timed out");
-          handleLogout();
-        }
-      }
-    };
-
-    const resetTimeout = () => {
-      clearTimeout(timeout);
-      sessionStorage.setItem("sessionStartTime", Date.now().toString());
-
-      timeout = setTimeout(() => {
-        alert("Session timed out");
-        handleLogout();
-      }, 5 * 60 * 1000);
-    };
-
-    const handleLogout = () => {
-      dispatch(signOut());
-      sessionStorage.removeItem("sessionStartTime");
-      navigate("/signin");
-    };
-
-    if (isAuthenticated) {
-      checkSession();
-      resetTimeout();
-      window.addEventListener("mousemove", resetTimeout);
-      window.addEventListener("keydown", resetTimeout);
-    }
-
-    return () => {
-      clearTimeout(timeout);
-      window.removeEventListener("mousemove", resetTimeout);
-      window.removeEventListener("keydown", resetTimeout);
-    };
-  }, [isAuthenticated, dispatch, navigate]);
-
-
 
   return (
     <div className="App">
@@ -451,8 +725,8 @@ function App() {
         {isModalOpen && (
           <EditLabel
             labels={labels}
-            addLabel={(label) => dispatch(addLabel({ userId, label }))}
-            deleteLabel={(label) => dispatch(deleteLabel({ userId, label }))}
+            addLabel={(label) => dispatch(addLabel({ userId, label }))} 
+            deleteLabel={(label) => dispatch(deleteLabel({ userId, label }))} 
             closeModal={closeModal}
           />
         )}

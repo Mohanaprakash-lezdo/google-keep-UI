@@ -104,13 +104,90 @@
 // export default authSlice.reducer;
 
 
+// import { createSlice } from "@reduxjs/toolkit";
+
+// const storedUser = JSON.parse(localStorage.getItem("user"));
+// const isAuthenticated =  localStorage.getItem("isAuthenticated") === "true";
+
+// const initialState = {
+//   isAuthenticated: !! storedUser ? isAuthenticated:false ,  // Reset if no user
+//   user: storedUser || null,
+// };
+
+// const authSlice = createSlice({
+//   name: "auth",
+//   initialState,
+//   reducers: {
+//     // signUp: (state, action) => {
+//     //   const newUser = action.payload;
+//     //   localStorage.setItem("user", JSON.stringify(newUser));
+//     // },
+//     // signIn: (state, action) => {
+//     //   state.isAuthenticated = true;
+//     //   state.user = action.payload;
+//     //   localStorage.setItem("isAuthenticated", "true");
+//     //   localStorage.setItem("user", JSON.stringify(action.payload));
+//     // },
+//     // signOut: (state) => {
+//     //   state.isAuthenticated = false;
+//     //   state.user = null;
+//     //   localStorage.removeItem("isAuthenticated");
+//     //   localStorage.removeItem("user");
+//     // },
+//     // signUp: (state, action) => {
+//     //   const newUser = action.payload;
+//     //   localStorage.setItem("user", JSON.stringify(newUser));
+//     //   localStorage.setItem("isAuthenticated", "true");
+//     //   state.isAuthenticated = true;
+//     //   state.user = newUser;
+//     // },
+//     // signIn: (state, action) => {
+//     //   state.isAuthenticated = true;
+//     //   state.user = action.payload;
+//     //   localStorage.setItem("isAuthenticated", "true");
+//     //   localStorage.setItem("user", JSON.stringify(action.payload));
+//     // },
+//     // signOut: (state) => {
+//     //   state.isAuthenticated = false;
+//     //   state.user = null;
+//     //   localStorage.removeItem("isAuthenticated");
+//     //   localStorage.removeItem("user");
+//     // },
+//     signUp: (state, action) => {
+//       const newUser = action.payload;
+//       localStorage.setItem('user',JSON.stringify(newUser));
+//       state.user = newUser;
+//       state.isAuthenticated = false;
+//       // User must sign in manually
+//       // localStorage.setItem("user", JSON.stringify(newUser));
+//       // localStorage.setItem("isAuthenticated", "true");
+//     },
+//     signIn: (state, action) => {
+//       state.isAuthenticated = true;
+//       state.user = action.payload;
+//       localStorage.setItem("user", JSON.stringify(action.payload));
+//       localStorage.setItem("isAuthenticated", "true");
+//     },
+//     signOut: (state) => {
+//       state.isAuthenticated = false;
+//       state.user = null;
+//       localStorage.removeItem("user");
+//       localStorage.removeItem("isAuthenticated");
+//       sessionStorage.clear(); 
+//       //  Clears session storage too
+//     },
+//   },
+// });
+
+// export const { signUp, signIn, signOut } = authSlice.actions;
+// export default authSlice.reducer;
 import { createSlice } from "@reduxjs/toolkit";
 
 const storedUser = JSON.parse(localStorage.getItem("user"));
-const isAuthenticated =  localStorage.getItem("isAuthenticated") === "true";
+const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
 
 const initialState = {
-  isAuthenticated: !! storedUser ? isAuthenticated:false ,  // Reset if no user
+  isAuthenticated: storedUser ? isAuthenticated : false, 
   user: storedUser || null,
 };
 
@@ -118,49 +195,11 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    // signUp: (state, action) => {
-    //   const newUser = action.payload;
-    //   localStorage.setItem("user", JSON.stringify(newUser));
-    // },
-    // signIn: (state, action) => {
-    //   state.isAuthenticated = true;
-    //   state.user = action.payload;
-    //   localStorage.setItem("isAuthenticated", "true");
-    //   localStorage.setItem("user", JSON.stringify(action.payload));
-    // },
-    // signOut: (state) => {
-    //   state.isAuthenticated = false;
-    //   state.user = null;
-    //   localStorage.removeItem("isAuthenticated");
-    //   localStorage.removeItem("user");
-    // },
-    // signUp: (state, action) => {
-    //   const newUser = action.payload;
-    //   localStorage.setItem("user", JSON.stringify(newUser));
-    //   localStorage.setItem("isAuthenticated", "true");
-    //   state.isAuthenticated = true;
-    //   state.user = newUser;
-    // },
-    // signIn: (state, action) => {
-    //   state.isAuthenticated = true;
-    //   state.user = action.payload;
-    //   localStorage.setItem("isAuthenticated", "true");
-    //   localStorage.setItem("user", JSON.stringify(action.payload));
-    // },
-    // signOut: (state) => {
-    //   state.isAuthenticated = false;
-    //   state.user = null;
-    //   localStorage.removeItem("isAuthenticated");
-    //   localStorage.removeItem("user");
-    // },
     signUp: (state, action) => {
       const newUser = action.payload;
-      localStorage.setItem('user',JSON.stringify(newUser));
+      localStorage.setItem("user", JSON.stringify(newUser));
       state.user = newUser;
-      state.isAuthenticated = false;
-      // User must sign in manually
-      // localStorage.setItem("user", JSON.stringify(newUser));
-      // localStorage.setItem("isAuthenticated", "true");
+      state.isAuthenticated = false; // User must sign in manually
     },
     signIn: (state, action) => {
       state.isAuthenticated = true;
@@ -173,11 +212,24 @@ const authSlice = createSlice({
       state.user = null;
       localStorage.removeItem("user");
       localStorage.removeItem("isAuthenticated");
-      sessionStorage.clear(); 
-      //  Clears session storage too
     },
   },
 });
 
+// ✅ Middleware to auto-logout after 5 minutes
+const sessionTimeoutMiddleware = (store) => (next) => (action) => {
+  if (action.type === signIn.type) {
+    setTimeout(() => {
+      alert("Session timed out. Please sign in again.");
+      store.dispatch(signOut());
+    }, 120000); // 5 minutes (300,000 ms)
+  }
+
+  return next(action);
+};
+
 export const { signUp, signIn, signOut } = authSlice.actions;
 export default authSlice.reducer;
+
+// ✅ Attach middleware inside store.js
+export const authMiddleware = sessionTimeoutMiddleware;

@@ -849,3 +849,80 @@ const NoteList = ({ noteType, labelName }) => {
 };
 
 export default NoteList;
+
+// import React, { useEffect, useState } from "react";
+// import { useNavigate, useParams } from "react-router-dom";
+// import { useSelector, useDispatch } from "react-redux";
+// import Note from "../Note/Note";
+// import { permanentDeleteNote } from "../../features/NotesSlice";
+// import "./NoteList.css";
+
+// const NoteList = ({ noteType, labelName }) => {
+//   const navigate = useNavigate();
+//   const dispatch = useDispatch();
+//   const { id } = useParams();
+
+//   // ✅ Get the logged-in user ID
+//   const currentUser = useSelector((state) => state.auth.user);
+//   const userId = currentUser?.id;
+
+//   // ✅ Fetch only the logged-in user's notes
+//   const allNotes = useSelector((state) => state.notes[userId]?.notes) || [];
+//   const reminderNotes = useSelector((state) => state.notes[userId]?.reminderNotes) || [];
+//   const archivedNotes = useSelector((state) => state.notes[userId]?.archivedNotes) || [];
+//   const labels = useSelector((state) => state.notes[userId]?.labels) || {};
+
+//   // State to store displayed notes
+//   const [displayNotes, setDisplayNotes] = useState([]);
+
+//   useEffect(() => {
+//     let filteredNotes = [];
+
+//     if (noteType === "reminder") {
+//       filteredNotes = reminderNotes;
+//     } else if (noteType === "archive") {
+//       filteredNotes = archivedNotes;
+//     } else if (labelName) {
+//       filteredNotes = labels[labelName] || [];
+//     } else {
+//       filteredNotes = allNotes.filter((note) => Array.isArray(note.labels) && note.labels.length === 0);
+//     }
+
+//     setDisplayNotes(filteredNotes);
+//     console.log(`📝 Displaying notes for ${labelName || "Home"} (User: ${userId}):`, filteredNotes);
+//   }, [noteType, labelName, allNotes, reminderNotes, archivedNotes, labels, userId]);
+
+//   // ✅ Handle permanent delete (pass `userId`)
+//   const handleDelete = (e, noteId) => {
+//     e.stopPropagation();
+//     dispatch(permanentDeleteNote({ userId, noteId }));
+//   };
+
+//   return (
+//     <div className="note-list">
+//       {displayNotes.length > 0 ? (
+//         displayNotes.map((note) => (
+//           <div key={note.id} className="note-item">
+//             <Note id={note.id} />
+//           </div>
+//         ))
+//       ) : (
+//         <p className="empty-message">No notes available</p>
+//       )}
+
+//       {/* Modal for selected note */}
+//       {id && (
+//         <div className="modal-overlay" onClick={() => navigate("/")}>
+//           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+//             <Note id={id} />
+//             <button className="close-btn" onClick={() => navigate("/")}>
+//               Close
+//             </button>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default NoteList;
