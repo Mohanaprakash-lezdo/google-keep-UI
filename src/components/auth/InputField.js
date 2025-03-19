@@ -19,9 +19,9 @@
 // };
 
 // export default InputField;
-import React from "react";
-import { TextField } from "@mui/material";
-import { Controller } from "react-hook-form";
+// import React from "react";
+// import { TextField } from "@mui/material";
+// import { Controller } from "react-hook-form";
 
 // const InputField = ({ label, name, type = "text", value, onChange }) => {
 //   return (
@@ -39,15 +39,79 @@ import { Controller } from "react-hook-form";
 // };
 
 // export default InputField;
+// const InputField = ({ control, name, label, type, error }) => {
+//   return (
+//     <div>
+//       <Controller
+//         name={name}
+//         control={control}
+//         defaultValue=''
+//         // Ensures input is always controlled
+
+//         render={({ field }) => (
+//           <TextField
+//             {...field}
+//             label={label}
+//             type={type}
+//             variant="standard"
+//             fullWidth
+//             error={!!error}
+//             helperText={error} 
+//             //  Show error message
+//           />
+//         )}
+//       />
+//     </div>
+//   );
+// };
+
+// export default InputField;
+// import React from "react";
+import { Controller } from "react-hook-form";
+import TextField from "@mui/material/TextField";
+
+// const InputField = ({ control, name, label, type, error }) => {
+//   return (
+//     <div style={{ marginBottom: "20px" }}> {/* Adds bottom margin */}
+//       <Controller
+//         name={name}
+//         control={control}
+//         defaultValue=""
+//         render={({ field }) => (
+//           <TextField
+//             {...field}
+//             label={label}
+//             type={type}
+//             variant="standard"
+//             fullWidth
+//             error={!!error}
+//             helperText={error}
+//             sx={{
+//               "& .MuiInput-underline:before": {
+//                 borderBottomColor: "#ff0080", // Custom underline color before focus
+//               },
+//               "& .MuiInput-underline:hover:before": {
+//                 borderBottomColor: "#a100ff !important", // Underline on hover
+//               },
+//               "& .MuiInput-underline:after": {
+//                 borderBottomColor: "#7209b7", // Underline after focus
+//               },
+//             }}
+//           />
+//         )}
+//       />
+//     </div>
+//   );
+// };
+
+// export default InputField;
 const InputField = ({ control, name, label, type, error }) => {
   return (
-    <div>
+    <div style={{ marginBottom: '16px' }}> {/* Added margin-bottom */}
       <Controller
         name={name}
         control={control}
         defaultValue=''
-        // Ensures input is always controlled
-
         render={({ field }) => (
           <TextField
             {...field}
@@ -56,8 +120,10 @@ const InputField = ({ control, name, label, type, error }) => {
             variant="standard"
             fullWidth
             error={!!error}
-            helperText={error} 
-            //  Show error message
+            helperText={error}
+            InputProps={{
+              style: { borderBottom: '1.5px solid #40298E' } // Applying the extracted color
+            }}
           />
         )}
       />
