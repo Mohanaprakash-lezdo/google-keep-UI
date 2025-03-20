@@ -113,9 +113,10 @@ import "./Reminder.css"; // Optional for better styling
 
 const Reminder = () => {
   const dispatch = useDispatch();
-  const reminderNotes = useSelector((state) =>
-    state.notes.notes.filter((note) => note.isReminder) // ✅ Filter reminder notes
-  );
+  // const reminderNotes = useSelector((state) =>
+  //   state.notes.notes.filter((note) => note.isReminder) // ✅ Filter reminder notes
+  // );
+  const reminderNotes = useSelector((state) => state.notes.reminderNotes || []);
 
   console.log(reminderNotes);
 

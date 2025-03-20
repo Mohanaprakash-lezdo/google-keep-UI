@@ -777,78 +777,78 @@
 // };
 
 // export default NoteList;
-import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import Note from "../Note/Note";
-import { permanentDeleteNote } from "../../features/NotesSlice";
-import "./NoteList.css";
+// import React, { useEffect, useState } from "react";
+// import { useNavigate, useParams } from "react-router-dom";
+// import { useSelector, useDispatch } from "react-redux";
+// import Note from "../Note/Note";
+// import { permanentDeleteNote } from "../../features/NotesSlice";
+// import "./NoteList.css";
 
-const NoteList = ({ noteType, labelName }) => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const { id } = useParams();
+// const NoteList = ({ noteType, labelName }) => {
+//   const navigate = useNavigate();
+//   const dispatch = useDispatch();
+//   const { id } = useParams();
 
-  // Get all notes from Redux state
-  const allNotes = useSelector((state) => state.notes.notes) || [];
-  const reminderNotes = useSelector((state) => state.notes.reminderNotes) || [];
-  const archivedNotes = useSelector((state) => state.notes.archivedNotes) || [];
-  const labels = useSelector((state) => state.notes.labels) || {};
+//   // Get all notes from Redux state
+//   const allNotes = useSelector((state) => state.notes.notes) || [];
+//   const reminderNotes = useSelector((state) => state.notes.reminderNotes) || [];
+//   const archivedNotes = useSelector((state) => state.notes.archivedNotes) || [];
+//   const labels = useSelector((state) => state.notes.labels) || {};
 
-  // State to store displayed notes
-  const [displayNotes, setDisplayNotes] = useState([]);
+//   // State to store displayed notes
+//   const [displayNotes, setDisplayNotes] = useState([]);
 
-  useEffect(() => {
-    let filteredNotes = [];
+//   useEffect(() => {
+//     let filteredNotes = [];
 
-    if (noteType === "reminder") {
-      filteredNotes = reminderNotes;
-    } else if (noteType === "archive") {
-      filteredNotes = archivedNotes;
-    } else if (labelName) {
-      filteredNotes = labels[labelName] || [];
-    } else {
-      filteredNotes = allNotes.filter((note) => Array.isArray(note.labels) && note.labels.length === 0);
-    }
+//     if (noteType === "reminder") {
+//       filteredNotes = reminderNotes;
+//     } else if (noteType === "archive") {
+//       filteredNotes = archivedNotes;
+//     } else if (labelName) {
+//       filteredNotes = labels[labelName] || [];
+//     } else {
+//       filteredNotes = allNotes.filter((note) => Array.isArray(note.labels) && note.labels.length === 0);
+//     }
 
-    setDisplayNotes(filteredNotes);
-    console.log(`📝 Displaying notes for ${labelName || "Home"}:`, filteredNotes);
-  }, [noteType, labelName, allNotes, reminderNotes, archivedNotes, labels]);
+//     setDisplayNotes(filteredNotes);
+//     console.log(`📝 Displaying notes for ${labelName || "Home"}:`, filteredNotes);
+//   }, [noteType, labelName, allNotes, reminderNotes, archivedNotes, labels]);
 
-  // Handle permanent delete
-  const handleDelete = (e, noteId) => {
-    e.stopPropagation();
-    dispatch(permanentDeleteNote(noteId));
-  };
+//   // Handle permanent delete
+//   const handleDelete = (e, noteId) => {
+//     e.stopPropagation();
+//     dispatch(permanentDeleteNote(noteId));
+//   };
 
-  return (
-    <div className="note-list">
-      {displayNotes.length > 0 ? (
-        displayNotes.map((note) => (
-          <div key={note.id} className="note-item">
-            <Note id={note.id} />
-          </div>
-        ))
-      ) : (
-        <p className="empty-message">No notes available</p>
-      )}
+//   return (
+//     <div className="note-list">
+//       {displayNotes.length > 0 ? (
+//         displayNotes.map((note) => (
+//           <div key={note.id} className="note-item">
+//             <Note id={note.id} />
+//           </div>
+//         ))
+//       ) : (
+//         <p className="empty-message">No notes available</p>
+//       )}
 
-      {/* Modal for selected note */}
-      {id && (
-        <div className="modal-overlay" onClick={() => navigate("/")}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <Note id={id} />
-            <button className="close-btn" onClick={() => navigate("/")}>
-              Close
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
+//       {/* Modal for selected note */}
+//       {id && (
+//         <div className="modal-overlay" onClick={() => navigate("/")}>
+//           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+//             <Note id={id} />
+//             <button className="close-btn" onClick={() => navigate("/")}>
+//               Close
+//             </button>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
 
-export default NoteList;
+// export default NoteList;
 
 // import React, { useEffect, useState } from "react";
 // import { useNavigate, useParams } from "react-router-dom";
@@ -926,3 +926,167 @@ export default NoteList;
 // };
 
 // export default NoteList;
+// import React, { useEffect, useState } from "react";
+// import { useNavigate, useParams } from "react-router-dom";
+// import { useSelector, useDispatch } from "react-redux";
+// import Note from "../Note/Note";
+// import { permanentDeleteNote } from "../../features/NotesSlice";
+// import "./NoteList.css";
+
+// const NoteList = ({ noteType, labelName }) => {
+//   const navigate = useNavigate();
+//   const dispatch = useDispatch();
+//   const { id } = useParams();
+
+//   // Get all notes from Redux state
+//   const allNotes = useSelector((state) => state.notes.notes) || [];
+//   const reminderNotes = useSelector((state) => state.notes.reminderNotes) || [];
+//   const archivedNotes = useSelector((state) => state.notes.archivedNotes) || [];
+//   const labels = useSelector((state) => state.notes.labels) || {};
+
+//   // State to store displayed notes
+//   const [displayNotes, setDisplayNotes] = useState([]);
+
+//   useEffect(() => {
+//     let filteredNotes = [];
+
+//     if (noteType === "reminder") {
+//       filteredNotes = reminderNotes;
+//     } else if (noteType === "archive") {
+//       filteredNotes = archivedNotes;
+//     } else if (labelName) {
+//       // ✅ Fetch the latest notes belonging to the label
+//       filteredNotes = allNotes.filter(
+//         (note) => note.labels?.includes(labelName) && !note.isArchived
+//       );
+//       console.log("📋 Filtered Notes for Label:", filteredNotes);
+//     } else {
+//       // ✅ Show only unarchived notes in "Home"
+//       filteredNotes = allNotes.filter(
+//         (note) => !note.isArchived && (!note.labels || note.labels.length === 0)
+//       );
+//     }
+
+//     setDisplayNotes([...filteredNotes]); // ✅ Force React to detect changes
+
+//     console.log(`📝 Displaying notes for ${labelName || "Home"}:`, filteredNotes);
+//   }, [noteType, labelName, allNotes, reminderNotes, archivedNotes, labels]);
+
+//   // Handle permanent delete
+//   const handleDelete = (e, noteId) => {
+//     e.stopPropagation();
+//     dispatch(permanentDeleteNote(noteId));
+//   };
+
+//   return (
+//     <div className="note-list">
+//       {displayNotes.length > 0 ? (
+//         displayNotes.map((note) => (
+//           <div key={note.id} className="note-item">
+//             <Note id={note.id} />
+//           </div>
+//         ))
+//       ) : (
+//         <p className="empty-message">No notes available</p>
+//       )}
+
+//       {/* Modal for selected note */}
+//       {id && (
+//         <div className="modal-overlay" onClick={() => navigate("/")}>
+//           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+//             <Note id={id} />
+//             <button className="close-btn" onClick={() => navigate("/")}>
+//               Close
+//             </button>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default NoteList;
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import Note from "../Note/Note";
+import { permanentDeleteNote } from "../../features/NotesSlice";
+import "./NoteList.css";
+
+const NoteList = ({ noteType, labelName }) => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { id } = useParams();
+
+  // Get all notes from Redux state
+  const allNotes = useSelector((state) => state.notes.notes) || [];
+  const reminderNotes = useSelector((state) => state.notes.reminderNotes) || [];
+  const archivedNotes = useSelector((state) => state.notes.archivedNotes) || [];
+  const labels = useSelector((state) => state.notes.labels) || {};
+
+  // State to store displayed notes
+  const [displayNotes, setDisplayNotes] = useState([]);
+
+  useEffect(() => {
+    let filteredNotes = [];
+
+    if (noteType === "reminder") {
+      filteredNotes = reminderNotes;
+    } else if (noteType === "archive") {
+      filteredNotes = archivedNotes;
+    } else if (labelName) {
+      // ✅ Fetch the latest notes belonging to the label
+      filteredNotes = allNotes.filter(
+        (note) => note.labels?.includes(labelName) && !note.isArchived
+      );
+    } else {
+      // ✅ Show only unarchived notes in "Home"
+      filteredNotes = allNotes.filter(
+        (note) => !note.isArchived && (!note.labels || note.labels.length === 0)
+      );
+    }
+
+    // ✅ Sort notes: Pinned notes first, then unpinned
+    const sortedNotes = [
+      ...filteredNotes.filter((note) => note.isPinned),
+      ...filteredNotes.filter((note) => !note.isPinned),
+    ];
+
+    setDisplayNotes([...sortedNotes]); // ✅ Ensure React detects changes
+  }, [noteType, labelName, allNotes, reminderNotes, archivedNotes, labels]);
+
+  // Handle permanent delete
+  const handleDelete = (e, noteId) => {
+    e.stopPropagation();
+    dispatch(permanentDeleteNote(noteId));
+  };
+
+  return (
+    <div className="note-list">
+      {displayNotes.length > 0 ? (
+        displayNotes.map((note) => (
+          <div key={note.id} className="note-item">
+            <Note id={note.id} />
+          </div>
+        ))
+      ) : (
+        <p className="empty-message">No notes available</p>
+      )}
+
+      {/* Modal for selected note */}
+      {id && (
+        <div className="modal-overlay" onClick={() => navigate("/")}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <Note id={id} />
+            <button className="close-btn" onClick={() => navigate("/")}>
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default NoteList;
+

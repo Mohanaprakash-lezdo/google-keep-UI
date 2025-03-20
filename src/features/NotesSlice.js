@@ -19,19 +19,7 @@ const NotesSlice = createSlice({
     clearUser: (state) => {
       state.userId = null;  
     },
-    // setUser: (state, action) => {
-    //   state.userId = action.payload;
-    // },
-
-    // // Clear state on logout
-    // clearUser: (state) => {
-    //   state.userId = null;
-    //   state.notes = [];
-    //   state.trashedNotes = [];
-    //   state.archivedNotes = [];
-    //   state.labels = {};
-    //   state.reminderNotes = [];
-    // },
+   
 
    
     addNote: (state, action) => {
@@ -81,7 +69,8 @@ const NotesSlice = createSlice({
       };
 
       // Add to main notes list to ensure visibility everywhere
-      state.notes.push(newReminderNote);
+      // state.notes.push(newReminderNote);
+      state.reminderNotes.push(newReminderNote); 
     },
     
     deleteNote: (state, action) => {
@@ -112,9 +101,9 @@ const NotesSlice = createSlice({
           state.labels[label] = state.labels[label].filter((note) => note.id !== id);
         });
     
-        console.log(`✅ Note with ID ${id} moved to Trash.`);
+        console.log(` Note with ID ${id} moved to Trash.`);
       } else {
-        console.warn(`❌ Note with ID ${id} not found!`);
+        console.warn(` Note with ID ${id} not found!`);
       }
     },
     
@@ -201,140 +190,39 @@ const NotesSlice = createSlice({
     },
 
    
+    
     archiveNote: (state, action) => {
       const id = action.payload;
+      const noteIndex = state.notes.findIndex((note) => note.id === id);
     
-      let noteToArchive =
-        state.notes.find((note) => note.id === id) ||
-        Object.values(state.labels).flat().find((note) => note.id === id);
-    
-      if (noteToArchive) {
-        const updatedNote = { ...noteToArchive, isArchived: true };
-    
-        // Move note to archivedNotes
-        state.archivedNotes.push(updatedNote);
-    
-        // Remove from notes
+      if (noteIndex !== -1) {
+        const archivedNote = { ...state.notes[noteIndex], isArchived: true };
+        state.archivedNotes.push(archivedNote);
         state.notes = state.notes.filter((note) => note.id !== id);
-    
-        // Remove from labels
-        Object.keys(state.labels).forEach((label) => {
-          state.labels[label] = state.labels[label].filter((note) => note.id !== id);
-        });
       }
+    
+      // ✅ Remove from label lists if it belongs to any label
+      Object.keys(state.labels).forEach(label => {
+        state.labels[label] = state.labels[label].filter(note => note.id !== id);
+      });
     },
     
+   
+   
     
-    // Unarchive note
-    // UnarchiveNote: (state, action) => {
-    //   const id = action.payload;
-    //   const noteIndex = state.archivedNotes.findIndex((note) => note.id === id);
-    //   if (noteIndex !== -1) {
-    //     const noteToUnarchive = {
-    //       ...state.archivedNotes[noteIndex],
-    //       isArchived: false,
-    //     };
-
-    //     // Correctly update Redux state immutably
-    //     state.notes = [...state.notes, noteToUnarchive];
-    //     state.archivedNotes = state.archivedNotes.filter(
-    //       (note) => note.id !== id
-    //     );
-    //   }
-    // },
-    // UnarchiveNote: (state, action) => {
-    //   const id = action.payload;
-    //   const noteIndex = state.archivedNotes.findIndex((note) => note.id === id);
-    
-    //   if (noteIndex !== -1) {
-    //     const note = { ...state.archivedNotes[noteIndex], isArchived: false };
-    
-    //     // Move back to notes
-    //     state.notes.push(note);
-    
-    //     // Remove from archive
-    //     state.archivedNotes.splice(noteIndex, 1);
-    //   }
-    // },
-    // UnarchiveNote: (state, action) => {
-    //   const id = action.payload;
-    
-    //   let noteToRestore = state.archivedNotes.find((note) => note.id === id);
-    
-    //   if (noteToRestore) {
-    //     const updatedNote = { ...noteToRestore, isArchived: false };
-    
-    //     // If note had labels before archiving, restore it there
-    //     if (noteToRestore.labels?.length) {
-    //       noteToRestore.labels.forEach((label) => {
-    //         if (state.labels[label]) {
-    //           state.labels[label].push(updatedNote);
-    //         }
-    //       });
-    //     } else {
-    //       // If no labels, restore to main notes
-    //       state.notes.push(updatedNote);
-    //     }
-    
-    //     // Remove from archive
-    //     state.archivedNotes = state.archivedNotes.filter((note) => note.id !== id);
-    //   }
-    // },
-    
-    // UnarchiveNote: (state, action) => {
-    //   const id = action.payload;
-    
-    //   let noteToRestore = state.archivedNotes.find((note) => note.id === id);
-    
-    //   if (noteToRestore) {
-    //     const updatedNote = { ...noteToRestore, isArchived: false };
-    
-    //     // ✅ If note had labels before archiving, restore it to those labels
-    //     if (noteToRestore.labels?.length) {
-    //       let restored = false;
-    //       noteToRestore.labels.forEach((label) => {
-    //         if (state.labels[label]) {
-    //           state.labels[label].push(updatedNote);
-    //           restored = true;
-    //         }
-    //       });
-    
-    //       // ✅ If the labels were deleted, move the note to Home
-    //       if (!restored) {
-    //         state.notes.push(updatedNote);
-    //       }
-    //     } else {
-    //       // ✅ If the note was created in Home, move it back to Home
-    //       state.notes.push(updatedNote);
-    //     }
-    
-    //     // ✅ Remove from Archive
-    //     state.archivedNotes = state.archivedNotes.filter((note) => note.id !== id);
-    //   }
-    // },
     UnarchiveNote: (state, action) => {
-      const id = action.payload;
-      let noteToRestore = state.archivedNotes.find((note) => note.id === id);
-    
-      if (noteToRestore) {
-        const updatedNote = { ...noteToRestore, isArchived: false };
-    
-        // Ensure it's restored to the correct label
-        if (noteToRestore.labels?.length) {
-          noteToRestore.labels.forEach((label) => {
-            if (state.labels[label]) {
-              // ✅ Correct way to update Redux state to trigger UI update
-              state.labels = {
-                ...state.labels,
-                [label]: [...state.labels[label], updatedNote],  // NEW array reference
-              };
-            }
-          });
-        } else {
-          state.notes = [...state.notes, updatedNote]; // Ensure new reference for UI update
-        }
-    
-        state.archivedNotes = state.archivedNotes.filter((note) => note.id !== id); // Remove from archive
+      const noteId = action.payload;
+      
+      // ✅ Find note in archivedNotes
+      const noteIndex = state.archivedNotes.findIndex((note) => note.id === noteId);
+      
+      if (noteIndex !== -1) {
+        // ✅ Restore note and remove from archive
+        const restoredNote = { ...state.archivedNotes[noteIndex], isArchived: false };
+        state.notes.push(restoredNote); // Move it back to notes
+        state.archivedNotes.splice(noteIndex, 1); // Remove from archive
+      } else {
+        console.error(`❌ Note ID ${noteId} not found in archivedNotes`);
       }
     },
     
@@ -342,28 +230,59 @@ const NotesSlice = createSlice({
     
     copyNote: (state, action) => {
       const originalNote = action.payload;
-
+      console.log("📌 Original Note:", originalNote);
+    
+      // Create a new copy of the note with a unique ID
       const copiedNote = {
         ...originalNote,
-        id: uuidv4(), // Generate a new unique ID
-        labels: [...(originalNote.labels || [])], // Ensure labels exist
+        id: uuidv4(), // Generate a new ID
+        labels: [...(originalNote.labels || [])], // Preserve labels
       };
-
-      // Add copied note to `state.notes`
-      state.notes.push(copiedNote);
-
-      // Ensure copied note is stored under correct labels
-      copiedNote.labels.forEach((label) => {
-        if (!state.labels[label]) {
-          state.labels[label] = []; // Create label array if it doesn’t exist
-        }
-        state.labels[label] = [...state.labels[label], copiedNote]; // Add copied note under label
-      });
-
-      console.log(" Copied Note:", copiedNote);
-      console.log("Updated Labels:", state.labels);
+    
+      console.log("📋 Copied Note Before Adding:", copiedNote);
+    
+      if (copiedNote.labels.length > 0) {
+        copiedNote.labels.forEach((label) => {
+          if (!state.labels[label]) {
+            state.labels[label] = []; // Ensure label array exists
+          }
+          state.labels[label].push(copiedNote); // ✅ Add copied note to the correct label
+        });
+      } else {
+        state.notes.push(copiedNote); // ✅ Only add to Home if it has no labels
+      }
+    
+      console.log("📂 Updated Labels State:", JSON.parse(JSON.stringify(state.labels)));
+      console.log("🏠 Updated Notes (Home):", state.notes);
     },
+   
 
+    // copyNote: (state, action) => {
+    //   const { note, labelName } = action.payload;
+    //   if (!note) return;
+    
+    //   const copiedNote = {
+    //     ...note,
+    //     id: crypto.randomUUID(), // ✅ Ensure unique ID
+    //   };
+    
+    //   console.log("📝 Copying Note:", copiedNote);
+    
+    //   if (labelName && state.labels[labelName]) {
+    //     state.labels[labelName] = [...state.labels[labelName], copiedNote];
+    //     console.log(`📂 Copied to Label: ${labelName}`, state.labels[labelName]);
+    //   } else {
+    //     state.notes.push(copiedNote);
+    //     console.log("🏠 Copied to Home Notes:", state.notes);
+    //   }
+    
+    //   console.log("🔍 Redux State After Copying:", JSON.stringify(state, null, 2));
+    // },
+    
+    
+    
+    
+    
     addLabel: (state, action) => {
       const labelName = action.payload.trim();
       if (labelName && !state.labels[labelName]) {

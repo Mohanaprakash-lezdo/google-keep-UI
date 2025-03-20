@@ -45,3 +45,11 @@
     max-width: 300px; 
     /* margin-left: 25px;  */   
   }
+
+  .custom-button.continue {
+    background-color: #FF4081 !important;
+    color: white !important;
+    float: right;
+    position: relative;
+    left: 427px;
+  }

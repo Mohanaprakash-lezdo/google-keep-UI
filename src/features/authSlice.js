@@ -217,16 +217,32 @@ const authSlice = createSlice({
 });
 
 // ✅ Middleware to auto-logout after 5 minutes
+// const sessionTimeoutMiddleware = (store) => (next) => (action) => {
+//   if (action.type === signIn.type) {
+//     setTimeout(() => {
+//       alert("Session timed out. Please sign in again.");
+//       store.dispatch(signOut());
+//     }, 120000); // 5 minutes (300,000 ms)
+//   }
+
+//   return next(action);
+// };
+let sessionTimeout; // Store timeout reference
+
 const sessionTimeoutMiddleware = (store) => (next) => (action) => {
   if (action.type === signIn.type) {
-    setTimeout(() => {
+    // Clear any existing timeout before setting a new one
+    clearTimeout(sessionTimeout);
+
+    sessionTimeout = setTimeout(() => {
       alert("Session timed out. Please sign in again.");
       store.dispatch(signOut());
-    }, 120000); // 5 minutes (300,000 ms)
+    }, 120000); // 2 minutes
   }
 
   return next(action);
 };
+
 
 export const { signUp, signIn, signOut } = authSlice.actions;
 export default authSlice.reducer;

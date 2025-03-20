@@ -5,6 +5,7 @@ import LightbulbIcon from "@mui/icons-material/Lightbulb";
 // import SearchIcon from '@mui/icons-material/Search';
 import { useNavigate } from "react-router-dom";
 import { signOut } from "../../features/authSlice";
+import CustomButton from "../../Buttons/Custombutton";
 import "./Header.css";
 
 
@@ -34,9 +35,9 @@ const Header = () => {
           
           onChange={onChange}/>
           {isAuthenticated && (
-            <button className="logout-btn" onClick={handleLogout}>
-              Logout
-            </button>
+              <CustomButton variant="continue" type="submit">
+              Log Out
+            </CustomButton>
           )}
            
           </div>

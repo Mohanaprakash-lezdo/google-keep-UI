@@ -36,6 +36,59 @@
 // };
 
 // export default SignIn;
+// import { useForm } from "react-hook-form";
+// import { useDispatch } from "react-redux";
+// import { signIn } from "../../features/authSlice";
+// import InputField from "../../components/Auth/inputField";
+// import { useNavigate } from "react-router-dom";
+// import { yupResolver } from "@hookform/resolvers/yup";
+// import * as yup from "yup";
+// import CustomButton from "../../Buttons/Custombutton";
+
+// //  Define Yup Validation Schema
+// const schema = yup.object().shape({
+//   email: yup.string().email("Invalid email format").required("Email is required"),
+//   password: yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
+// });
+
+// const SignIn = () => {
+//   const {
+//     control,
+//     handleSubmit,
+//     formState: { errors },
+//   } = useForm({
+//     resolver: yupResolver(schema), 
+//     //  Use Yup for validation
+//   });
+
+//   const dispatch = useDispatch();
+//   const navigate = useNavigate();
+
+//   const onSubmit = (data) => {
+//     dispatch(signIn(data));
+//     navigate("/");
+//   };
+
+//   const handleNavigate = () => {
+//     navigate("/signup");
+//   };
+
+//   return (
+//     <div className="auth-container">
+//       <h2>Sign In</h2>
+//       <form onSubmit={handleSubmit(onSubmit)}>
+//         <InputField control={control} name="email" label="Email" type="email" error={errors.email?.message} />
+//         <InputField control={control} name="password" label="Password" type="password" error={errors.password?.message} />
+//         <CustomButton variant="continue" type="submit">
+//           continue
+//         </CustomButton>
+//       </form>
+//       <p>Don't have an account? <span onClick={handleNavigate} style={{ cursor: "pointer", color: "blue" }}>Sign Up</span></p>
+//     </div>
+//   );
+// };
+
+// export default SignIn;
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { signIn } from "../../features/authSlice";
@@ -44,8 +97,9 @@ import { useNavigate } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import CustomButton from "../../Buttons/Custombutton";
+import { useState } from "react";
 
-//  Define Yup Validation Schema
+// Define Yup Validation Schema
 const schema = yup.object().shape({
   email: yup.string().email("Invalid email format").required("Email is required"),
   password: yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
@@ -57,15 +111,27 @@ const SignIn = () => {
     handleSubmit,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(schema), 
-    //  Use Yup for validation
+    resolver: yupResolver(schema),
   });
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState(""); // ⬅️ State for error message
 
   const onSubmit = (data) => {
-    dispatch(signIn(data));
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+
+    if (!storedUser || storedUser.email !== data.email) {
+      setErrorMessage("User is not registered. Please sign up.");
+      return;
+    }
+
+    if (storedUser.password !== data.password) {
+      setErrorMessage("Incorrect password. Please try again.");
+      return;
+    }
+
+    dispatch(signIn(storedUser));
     navigate("/");
   };
 
@@ -79,11 +145,16 @@ const SignIn = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <InputField control={control} name="email" label="Email" type="email" error={errors.email?.message} />
         <InputField control={control} name="password" label="Password" type="password" error={errors.password?.message} />
+        
+        {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>} {/* ⬅️ Display error message */}
+
         <CustomButton variant="continue" type="submit">
-          continue
+          Continue
         </CustomButton>
       </form>
-      <p>Don't have an account? <span onClick={handleNavigate} style={{ cursor: "pointer", color: "blue" }}>Sign Up</span></p>
+      <p>
+        Don't have an account? <span onClick={handleNavigate} style={{ cursor: "pointer", color: "blue" }}>Sign Up</span>
+      </p>
     </div>
   );
 };
