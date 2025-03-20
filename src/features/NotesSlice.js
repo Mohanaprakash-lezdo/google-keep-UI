@@ -182,13 +182,30 @@ const NotesSlice = createSlice({
     },
 
     // pin note
+    // pinNote: (state, action) => {
+    //   const note = state.notes.find((note) => note.id === action.payload);
+    //   if (note) {
+    //     note.isPinned = !note.isPinned;
+    //   }
+    // },
+    // unpinNote: (state, action) => {
+    //   const note = state.notes.find((note) => note.id === action.payload);
+    //   if (note) {
+    //     note.isPinned = false;
+    //   }
+    // },
     pinNote: (state, action) => {
-      const note = state.notes.find((note) => note.id === action.payload);
+      const note = state.notes.find((n) => n.id === action.payload.id);
       if (note) {
-        note.isPinned = !note.isPinned;
+        note.isPinned = true; // ✅ Set pinned to true
       }
     },
-
+    unpinNote: (state, action) => {
+      const note = state.notes.find((n) => n.id === action.payload.id);
+      if (note) {
+        note.isPinned = false; // ✅ Set pinned to false
+      }
+    },
    
     
     archiveNote: (state, action) => {
@@ -351,6 +368,7 @@ export const {
   permanentDeleteNote,
   editNote,
   pinNote,
+  unpinNote,
   archiveNote,
   UnarchiveNote,
   addLabel,
