@@ -1090,6 +1090,114 @@
 
 // export default NoteList;
 
+// import React, { useEffect, useState } from "react";
+// import { useNavigate, useParams } from "react-router-dom";
+// import { useSelector, useDispatch } from "react-redux";
+// import Note from "../Note/Note";
+// import { permanentDeleteNote } from "../../features/NotesSlice";
+// import "./NoteList.css";
+
+// const NoteList = ({ noteType, labelName }) => {
+//   const navigate = useNavigate();
+//   const dispatch = useDispatch();
+//   const { id } = useParams();
+
+//   // Get all notes from Redux state
+//   const allNotes = useSelector((state) => state.notes.notes) || [];
+//   const reminderNotes = useSelector((state) => state.notes.reminderNotes) || [];
+//   const archivedNotes = useSelector((state) => state.notes.archivedNotes) || [];
+//   const labels = useSelector((state) => state.notes.labels) || {};
+
+//   // State to store displayed notes
+//   const [pinnedNotes, setPinnedNotes] = useState([]);
+//   const [otherNotes, setOtherNotes] = useState([]);
+
+//   useEffect(() => {
+//     let filteredNotes = [];
+
+//     if (noteType === "reminder") {
+//       filteredNotes = reminderNotes;
+//     } else if (noteType === "archive") {
+//       filteredNotes = archivedNotes;
+//     } else if (labelName) {
+//       // ✅ Fetch the latest notes belonging to the label
+//       filteredNotes = allNotes.filter(
+//         (note) => note.labels?.includes(labelName) && !note.isArchived
+//       );
+//     } else {
+//       // ✅ Show only unarchived notes in "Home"
+//       filteredNotes = allNotes.filter(
+//         (note) => !note.isArchived && (!note.labels || note.labels.length === 0)
+//       );
+//     }
+
+//     // ✅ Separate pinned and unpinned notes
+//     const pinned = filteredNotes.filter((note) => note.isPinned);
+//     const unpinned = filteredNotes.filter((note) => !note.isPinned);
+
+//     setPinnedNotes(pinned);
+//     setOtherNotes(unpinned);
+//   }, [noteType, labelName, allNotes, reminderNotes, archivedNotes, labels]); // ✅ React to pin/unpin changes
+
+//   // Handle permanent delete
+//   const handleDelete = (e, noteId) => {
+//     e.stopPropagation();
+//     dispatch(permanentDeleteNote(noteId));
+//   };
+
+//   return (
+//     <div className="note-list">
+//       {/* ✅ Show Pinned Section if there are pinned notes */}
+//       {pinnedNotes.length > 0 && (
+//         <>
+//           <h3 className="section-header">Pinned</h3>
+//           <div className="notes-container">
+//             {pinnedNotes.map((note) => (
+//               <div key={note.id} className="note-item">
+//                 <Note id={note.id} />
+//               </div>
+//             ))}
+//           </div>
+//         </>
+//       )}
+
+//       {/* ✅ Show Other Notes Section if there are unpinned notes */}
+//       {otherNotes.length > 0 && (
+//         <>
+//           <h3 className="section-header">
+//             {pinnedNotes.length > 0 ? "Other Notes" : "Notes"}
+//           </h3>
+//           <div className="notes-container">
+//             {otherNotes.map((note) => (
+//               <div key={note.id} className="note-item">
+//                 <Note id={note.id} />
+//               </div>
+//             ))}
+//           </div>
+//         </>
+//       )}
+
+//       {/* ✅ Show message if no notes are available */}
+//       {pinnedNotes.length === 0 && otherNotes.length === 0 && (
+//         <p className="empty-message">No notes available</p>
+//       )}
+
+//       {/* Modal for selected note */}
+//       {id && (
+//         <div className="modal-overlay" onClick={() => navigate("/")}>
+//           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+//             <Note id={id} />
+//             <button className="close-btn" onClick={() => navigate("/")}>
+//               Close
+//             </button>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default NoteList;
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -1100,7 +1208,7 @@ import "./NoteList.css";
 const NoteList = ({ noteType, labelName }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { id } = useParams();
+  const { id } = useParams(); // Get note ID from URL
 
   // Get all notes from Redux state
   const allNotes = useSelector((state) => state.notes.notes) || [];
@@ -1120,40 +1228,45 @@ const NoteList = ({ noteType, labelName }) => {
     } else if (noteType === "archive") {
       filteredNotes = archivedNotes;
     } else if (labelName) {
-      // ✅ Fetch the latest notes belonging to the label
       filteredNotes = allNotes.filter(
         (note) => note.labels?.includes(labelName) && !note.isArchived
       );
     } else {
-      // ✅ Show only unarchived notes in "Home"
       filteredNotes = allNotes.filter(
         (note) => !note.isArchived && (!note.labels || note.labels.length === 0)
       );
     }
 
-    // ✅ Separate pinned and unpinned notes
     const pinned = filteredNotes.filter((note) => note.isPinned);
     const unpinned = filteredNotes.filter((note) => !note.isPinned);
 
     setPinnedNotes(pinned);
     setOtherNotes(unpinned);
-  }, [noteType, labelName, allNotes, reminderNotes, archivedNotes, labels]); // ✅ React to pin/unpin changes
+  }, [noteType, labelName, allNotes, reminderNotes, archivedNotes, labels]);
 
-  // Handle permanent delete
-  const handleDelete = (e, noteId) => {
-    e.stopPropagation();
-    dispatch(permanentDeleteNote(noteId));
+  // Handle opening the modal and updating the URL
+  const openNoteModal = (noteId) => {
+    navigate(`/note/${noteId}`); // Update URL
+  };
+
+  // Handle closing the modal
+  const closeModal = () => {
+    navigate("/"); // Reset to home
   };
 
   return (
     <div className="note-list">
-      {/* ✅ Show Pinned Section if there are pinned notes */}
+      {/* Pinned Notes Section */}
       {pinnedNotes.length > 0 && (
         <>
           <h3 className="section-header">Pinned</h3>
           <div className="notes-container">
             {pinnedNotes.map((note) => (
-              <div key={note.id} className="note-item">
+              <div
+                key={note.id}
+                className="note-item"
+                onClick={() => openNoteModal(note.id)} // Open modal
+              >
                 <Note id={note.id} />
               </div>
             ))}
@@ -1161,7 +1274,7 @@ const NoteList = ({ noteType, labelName }) => {
         </>
       )}
 
-      {/* ✅ Show Other Notes Section if there are unpinned notes */}
+      {/* Other Notes Section */}
       {otherNotes.length > 0 && (
         <>
           <h3 className="section-header">
@@ -1169,7 +1282,11 @@ const NoteList = ({ noteType, labelName }) => {
           </h3>
           <div className="notes-container">
             {otherNotes.map((note) => (
-              <div key={note.id} className="note-item">
+              <div
+                key={note.id}
+                className="note-item"
+                onClick={() => openNoteModal(note.id)} // Open modal
+              >
                 <Note id={note.id} />
               </div>
             ))}
@@ -1177,17 +1294,17 @@ const NoteList = ({ noteType, labelName }) => {
         </>
       )}
 
-      {/* ✅ Show message if no notes are available */}
+      {/* No Notes Message */}
       {pinnedNotes.length === 0 && otherNotes.length === 0 && (
         <p className="empty-message">No notes available</p>
       )}
 
-      {/* Modal for selected note */}
+      {/* Modal for Selected Note */}
       {id && (
-        <div className="modal-overlay" onClick={() => navigate("/")}>
+        <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <Note id={id} />
-            <button className="close-btn" onClick={() => navigate("/")}>
+            <button className="close-btn" onClick={closeModal}>
               Close
             </button>
           </div>
