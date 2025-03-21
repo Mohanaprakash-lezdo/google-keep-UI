@@ -8,8 +8,10 @@
     display: flex;
     position: relative;
     flex-direction: column;
-    width:420px;
-    margin:20px auto;
+    width:400px; 
+    /* height: 152px; */
+    /* max-width:600px; */
+    margin:20px 327px auto;
     background-color: #fff; 
     padding: 5px;
     border-radius:7px;
@@ -17,6 +19,7 @@
 }
 
 
+ 
 
 .create-note input,
 .create-note textarea{

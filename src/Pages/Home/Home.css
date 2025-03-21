@@ -1,0 +1,16 @@
+.home-container {
+    display: flex;
+    flex-direction: column;  /* Stack elements vertically */
+    align-items: center;  /* Center content */
+    width: 100%;
+    padding-top: 20px;
+}
+
+.notes-container {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    flex-wrap: wrap; /* Ensures proper note arrangement */
+    justify-content: center; /* Centers notes */
+    gap: 10px; /* Space between notes */
+}
