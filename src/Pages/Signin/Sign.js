@@ -82,7 +82,7 @@ const SignIn = () => {
         <CustomButton variant="facebook" type="submit">
           continue
         </CustomButton>
-        <Button variant="facebook">Text</Button>
+        
       </form>
       <p>Don't have an account? <span onClick={handleNavigate} style={{ cursor: "pointer", color: "blue" }}>Sign Up</span></p>
     </div>
