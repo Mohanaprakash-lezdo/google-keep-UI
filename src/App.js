@@ -1217,7 +1217,7 @@ import SignIn from './Pages/Signin/Sign';
 import SignUp from './Pages/SignUp/SignUp';
 import { signOut } from './features/authSlice';
 import NoteList from "./components/NoteList/NoteList";
-
+// just 
 function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
