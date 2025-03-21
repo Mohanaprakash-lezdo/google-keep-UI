@@ -8,5 +8,5 @@ const AuthForm = ({ children, onSubmit, title }) => {
     </div>
   );
 };
-
+// just add
 export default AuthForm;
