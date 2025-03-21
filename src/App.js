@@ -1336,6 +1336,7 @@ function App() {
                 />
               </>
             )}
+            {/* hi */}
             {pinnedNotes.length === 0 && unpinnedNotes.length > 0 && (
               <NoteList 
                 notes={unpinnedNotes} 
