@@ -356,10 +356,20 @@ const NotesSlice = createSlice({
 
     // Search Query
     setSearchQuery: (state, action) => {
-      state.searchQuery = action.payload;
+      state.searchQuery = action.payload.toLowerCase();
     },
   },
 });
+export const selectFilteredNotes = (state) => {
+  const query = state.notes.searchQuery.toLowerCase();
+  if (!query) return state.notes.notes; // Return all notes if no search query
+
+  return state.notes.notes.filter(
+    (note) =>
+      note.title.toLowerCase().includes(query) ||
+      note.content.toLowerCase().includes(query)
+  );
+};
 export const {
   addNote,
   addReminderNote,

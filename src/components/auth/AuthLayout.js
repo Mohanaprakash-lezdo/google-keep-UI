@@ -396,6 +396,7 @@
 
 // export default AuthLayout;
 
+import { backdropClasses } from "@mui/material";
 import React from "react";
 
 const AuthLayout = ({ children }) => {
@@ -421,7 +422,8 @@ const AuthLayout = ({ children }) => {
 
   const welcomePanelStyle = {
     flex: 1,
-    background: "linear-gradient(135deg, #3a0ca3, #7209b7)",
+    // background: "linear-gradient(135deg, #3a0ca3, #7209b7)",
+    background:'linear-gradient(135deg, rgb(163 66 12), rgb(114, 9, 183))',
     color: "white",
     display: "flex",
     flexDirection: "column",
@@ -430,6 +432,7 @@ const AuthLayout = ({ children }) => {
     padding: "40px",
     textAlign: "center",
   };
+  
 
   const logoStyle = {
     fontSize: "24px",
@@ -459,6 +462,8 @@ const AuthLayout = ({ children }) => {
       <div style={authWrapperStyle}>
         {/* Left Welcome Section */}
         <div style={welcomePanelStyle}>
+          <h2 >Welcome Page</h2>
+          <h2>Sign in to access</h2>
           <div style={logoStyle}></div>
           
         </div>

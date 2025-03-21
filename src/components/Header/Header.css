@@ -46,10 +46,20 @@
     /* margin-left: 25px;  */   
   }
 
-  .custom-button.continue {
+  /* .custom-button.continue {
     background-color: #FF4081 !important;
     color: white !important;
     float: right;
     position: relative;
     left: 427px;
+  } */
+
+  .button-mui{
+    position: relative;
+    left:383px;
+    /* float: left; */
   }
+
+
+  /* (138 12 163) */
+  /* (255, 0, 128) */

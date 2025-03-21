@@ -85,7 +85,7 @@ const SignUp = () => {
         <InputField control={control} name="password" label="Password" type="password" error={errors.password?.message} />
         <InputField control={control} name="confirmPassword" label="Confirm Password" type="password" error={errors.confirmPassword?.message} />
         <CustomButton variant="continue" type="submit">
-          Sign Up
+          Register
         </CustomButton>
       </form>
       <p>Already have an account? <a href="/signin">Sign In</a></p>
