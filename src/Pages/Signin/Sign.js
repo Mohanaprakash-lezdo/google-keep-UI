@@ -39,7 +39,7 @@
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { signIn } from "../../features/authSlice";
-import InputField from "../../components/Auth/inputField";
+import InputField from "../../components/Auth/InputField";
 import { useNavigate } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
