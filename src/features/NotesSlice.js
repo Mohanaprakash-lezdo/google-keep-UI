@@ -22,34 +22,61 @@ const NotesSlice = createSlice({
    
 
    
+    // addNote: (state, action) => {
+    //   const newNote = {
+    //     id: uuidv4(),
+    //     title: action.payload.title || "",
+    //     content: action.payload.content || "",
+    //     labels: action.payload.labels || [],
+    //     isPinned: action.payload.isPinned || false,
+    //     isArchived: action.payload.isArchived || false,
+    //   };
+    
+    //   // Ensure notes are stored in an array
+    //   if (!Array.isArray(state.notes)) {
+    //     state.notes = []; // Initialize as an array if undefined
+    //   }
+    
+    //   // Store note globally in `state.notes`
+    //   state.notes.push(newNote);
+    
+    //   // Ensure labeled notes are stored correctly under each assigned label
+    //   newNote.labels.forEach((label) => {
+    //     if (!state.labels[label]) {
+    //       state.labels[label] = []; // Create label array if not exists
+    //     }
+    //     state.labels[label].push(newNote);
+    //   });
+    // },
+    
     addNote: (state, action) => {
       const newNote = {
         id: uuidv4(),
         title: action.payload.title || "",
         content: action.payload.content || "",
+        image: action.payload.image || "", // Ensure image support
         labels: action.payload.labels || [],
         isPinned: action.payload.isPinned || false,
         isArchived: action.payload.isArchived || false,
       };
     
-      // Ensure notes are stored in an array
+      // Ensure notes are initialized as an array
       if (!Array.isArray(state.notes)) {
-        state.notes = []; // Initialize as an array if undefined
+        state.notes = [];
       }
     
-      // Store note globally in `state.notes`
-      state.notes.push(newNote);
+      // **🔹 Update Redux State Properly**
+      state.notes = [...state.notes, newNote]; // Ensure new array reference
     
-      // Ensure labeled notes are stored correctly under each assigned label
+      // **🔹 Ensure labels exist and update correctly**
       newNote.labels.forEach((label) => {
         if (!state.labels[label]) {
-          state.labels[label] = []; // Create label array if not exists
+          state.labels[label] = [];
         }
-        state.labels[label].push(newNote);
+        state.labels[label] = [...state.labels[label], newNote]; // Spread for immutability
       });
     },
     
-
     updateNote: (state, action) => {
       const { id, title, content } = action.payload;
       const note = state.notes.find((note) => note.id === id);
@@ -170,16 +197,32 @@ const NotesSlice = createSlice({
     },
 
     // Edit Note
+    // editNote: (state, action) => {
+    //   const { id, updatedTitle, updateContent, updatedImage } = action.payload;
+    //   const note = state.notes.find((note) => note.id === id);
+    //   if (note) {
+    //     note.title = updatedTitle;
+    //     note.Content = updateContent;
+    //     note.image = updatedImage;
+    //     note.lastEdited = new Date().toLocaleTimeString();
+    //   }
+    // },
     editNote: (state, action) => {
-      const { id, updatedTitle, updateContent, updatedImage } = action.payload;
-      const note = state.notes.find((note) => note.id === id);
-      if (note) {
-        note.title = updatedTitle;
-        note.Content = updateContent;
-        note.image = updatedImage;
-        note.lastEdited = new Date().toLocaleTimeString();
-      }
+      const { id, updatedTitle, updatedContent, updatedImage } = action.payload;
+      
+      state.notes = state.notes.map(note =>
+        note.id === id
+          ? {
+              ...note,
+              title: updatedTitle,
+              content: updatedContent, // Fixed typo
+              image: updatedImage,
+              lastEdited: new Date().toLocaleTimeString(),
+            }
+          : note
+      );
     },
+    
 
     // pin note
     // pinNote: (state, action) => {
