@@ -79,7 +79,7 @@ const ProductDetail = () => {
           setLoading(false);
         });
     }
-  }, [id]); // ✅ Only runs when `id` changes
+  }, [id]); //  Only runs when `id` changes
 
 
   // Show Circular Progress while fetching data
