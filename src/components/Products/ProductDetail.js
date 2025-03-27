@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate,useLocation } from "react-router-dom";
-import {fetchProductById} from "./api";
+import api, {fetchProductById} from "./api";
 import { Card, CardMedia, CardContent, Typography, Button, Container,CircularProgress,Box } from "@mui/material";
 
 const ProductDetail = () => { 
@@ -12,50 +12,8 @@ const ProductDetail = () => {
   const [product, setProduct] = useState(location.state?.product || null);
   const [loading,setLoading]=useState(!product)
 
-  // useEffect(() => {
-  //   if (product) return;
-  //   setLoading(true);
-  //   // Avoid  re-fetching  if already available 
-  //   // First, check local storage for the product
-  //   const localProducts = JSON.parse(localStorage.getItem("localProducts")) || [];
-  //   const localProduct = localProducts.find((p) => p.id === Number(id));
-
-  //   if(localProduct){
-  //     setProduct(localProduct);
-  //     setLoading(false);
-  //   }else{
-  //     // Fetch from  Api  if not  found  locally 
-  //     api
-  //     .get(`/products/${id}`)
-  //     .then((res) => setProduct(res.data))
-  //     .catch((err) => console.error("Error fetching product:", err))
-  //     .finally(()=>setLoading(false))
-  //   }
-    
-  // }, [id,product]);
-  // useEffect(() => {
-  //   if (product) return;
-  //   setLoading(true);
-
-  //   const localProducts = JSON.parse(localStorage.getItem("localProducts")) || [];
-  //   const localProduct = localProducts.find((p) => p.id === Number(id));
-
-  //   if (localProduct) {
-  //     // Simulate  API request  to show  in  network tab 
-  //     setTimeout(()=>{
-  //       console.log("simulating  API call for  local product ",localProduct);
-  //       setProduct(localProduct);
-  //       setLoading(false);
-  //     },500)
-  //   } else {
-  //     fetchProductById(id)
-  //       .then(setProduct)
-  //       .catch((err) => console.error("Error fetching product:", err))
-  //       .finally(() => setLoading(false));
-  //   }
-  // }, [id, product]);
   useEffect(() => {
-    if (product) return; // ✅ Prevents unnecessary API calls
+    if (product) return; // Prevent unnecessary API calls
 
     setLoading(true);
 
@@ -63,23 +21,22 @@ const ProductDetail = () => {
     const localProduct = localProducts.find((p) => p.id === Number(id));
 
     if (localProduct) {
-      setTimeout(() => { // ✅ Simulated API call for Network tab
-        console.log("Simulating API call for local product:", localProduct);
-        setProduct(localProduct);
-        setLoading(false);
-      }, 500);
+      //  Simulate API call in Network tab by making a real request
+      api.get(`/products/dummy`, { params: { id: localProduct.id } })
+        .then(() => {
+          console.log("Simulated API call for local product:", localProduct);
+          setProduct(localProduct);
+        })
+        .catch((err) => console.error("Simulated API error:", err))
+        .finally(() => setLoading(false));
     } else {
       fetchProductById(id)
-        .then((data) => {
-          setProduct(data);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.error("Error fetching product:", err);
-          setLoading(false);
-        });
+        .then((data) => setProduct(data))
+        .catch((err) => console.error("Error fetching product:", err))
+        .finally(() => setLoading(false));
     }
-  }, [id]); //  Only runs when `id` changes
+  }, [id]); 
+
 
 
   // Show Circular Progress while fetching data
