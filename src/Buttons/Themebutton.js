@@ -12,39 +12,18 @@ const theme = createTheme({
   },
   components: {
     MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: "12px",
-          padding: "10px 20px",
-          fontSize: "1rem",
-          fontWeight: "bold",
-          transition: "all 0.3s ease-in-out",
-          "&:hover": {
-            transform: "scale(1.05)",
-          },
-        },
-        containedPrimary: {
-          backgroundColor: "#1976d2",
-          color: "#fff",
-          "&:hover": {
-            backgroundColor: "#1565c0",
-          },
-        },
-        containedSecondary: {
-          backgroundColor: "#dc004e",
-          color: "#fff",
-          "&:hover": {
-            backgroundColor: "#b0003a",
-          },
-        },
-        outlined: {
-          borderWidth: "2px",
-          "&:hover": {
-            borderColor: "#1976d2",
-            backgroundColor: "rgba(25, 118, 210, 0.1)",
-          },
-        },
-      },
+      // styleOverrides: {
+      //   root: {
+      //     borderRadius: "12px",
+      //     padding: "10px 20px",
+      //     fontSize: "1rem",
+      //     fontWeight: "bold",
+      //     transition: "all 0.3s ease-in-out",
+      //     "&:hover": {
+      //       transform: "scale(1.05)",
+      //     },
+      //   },
+      // },
       variants: [
         {
           props: { variant: "raise" },

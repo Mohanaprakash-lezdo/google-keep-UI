@@ -273,9 +273,10 @@
 // };
 
 // export default Products;
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "./api"; // Import Axios instance
+import api,{fetchproducts} from "./api"; // Import Axios instance
 import { ThemeProvider } from "@mui/material/styles";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -291,6 +292,7 @@ import {
   Button,
   Paper,
   Input,
+  CircularProgress
 } from "@mui/material";
 
 // Product validation schema
@@ -307,6 +309,8 @@ const productSchema = yup.object().shape({
 const Products = () => {
   const [products, setProducts] = useState([]); // Store products
   const [editingProduct, setEditingProduct] = useState(null); // Track product being edited
+  const [deletedProductIds, setDeletedProductIds] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false); // Controls form visibility
   const navigate = useNavigate();
 
@@ -324,11 +328,20 @@ const Products = () => {
 
   // Fetch products on component mount
   useEffect(() => {
-    api
-      .get("/products")
-      .then((res) => setProducts(res.data))
-      .catch((err) => console.error("Error fetching products:", err));
+    const getProducts = async () => {
+      try {
+        const fetchedProducts = await fetchproducts();
+        setProducts(fetchedProducts);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      }finally {
+        setLoading(false)
+      }
+    };
+
+    getProducts();
   }, []);
+
 
   // Handle image selection & validation
   const handleImageChange = (e) => {
@@ -363,7 +376,10 @@ const Products = () => {
   const onSubmit = async (data) => {
     try {
       if (editingProduct) {
-        await api.put(`/products/${editingProduct.id}`, data);
+        console.log("Updating product:", editingProduct.id, data); // Debugging
+        const response = await api.put(`/products/${editingProduct.id}`, data);
+        
+        console.log("PUT Response:", response); // Check Network response
         setProducts((prev) =>
           prev.map((prod) =>
             prod.id === editingProduct.id ? { ...prod, ...data } : prod
@@ -371,12 +387,26 @@ const Products = () => {
         );
         setEditingProduct(null);
       } else {
+        console.log("Creating product:", data); // Debugging
         const response = await api.post("/products", data);
-        setProducts([
-          ...products,
-          { ...response.data, id: products.length + 1 },
-        ]);
+        
+        console.log("POST Response:", response); // Check Network response
+        const newProduct = {
+          ...response.data,
+          id: Date.now(),
+          fromLocal: true, // Mark as locally created
+        };
+  
+        // Retrieve existing local products from local storage
+        const localProducts = JSON.parse(localStorage.getItem("localProducts")) || [];
+        
+        // Update local state
+        setProducts((prev) => [...prev, newProduct]); 
+        
+        localProducts.push(newProduct);
+        localStorage.setItem("localProducts", JSON.stringify(localProducts));
       }
+  
       reset();
       setShowForm(false); // Hide form after submission
     } catch (error) {
@@ -384,12 +414,35 @@ const Products = () => {
       alert("Error occurred. Check console for details.");
     }
   };
+  
 
   // Handle delete product
-  const handleDelete = async (id) => {
+  const handleDelete = async (id, event) => {
+    event.stopPropagation();
+
     try {
-      await api.delete(`/products/${id}`);
-      setProducts(products.filter((product) => product.id !== id));
+      console.log("Deleting product with ID:", id); // Log before request
+      // Send Delete request to API
+      const response = await api.delete(`/products/${id}`);
+      console.log("DELETE Response:", response); // Log API response
+
+      if (response.status === 200) {
+        setProducts((prevProducts) => {
+          // filter out the deleted product
+          const updatedProducts = prevProducts.filter(
+            (product) => product.id !== id
+          );
+          const deletedIds =
+            JSON.parse(localStorage.getItem("deletedProductIds")) || [];
+          deletedIds.push(id);
+          localStorage.setItem("deletedProductIds", JSON.stringify(deletedIds));
+          return updatedProducts;
+        });
+        setDeletedProductIds((prev) => [...prev, id]);
+        alert("product deleted successfully !");
+      } else {
+        alert("Failed to delete product  from api");
+      }
     } catch (error) {
       console.error("Error deleting product:", error);
       alert("Error deleting product. Check console for details.");
@@ -397,7 +450,10 @@ const Products = () => {
   };
 
   // Handle edit product
-  const handleEdit = (product) => {
+  const handleEdit = (product,event) => {
+    if (event){
+      event.stopPropagation();}
+
     setEditingProduct(product);
     setValue("title", product.title);
     setValue("price", product.price);
@@ -456,13 +512,12 @@ const Products = () => {
                 </p>
               )}
 
-              <Button type="submit" variant="raise" fullWidth>
+              <Button type="submit" variant="raise" >
                 {editingProduct ? "Update Product" : "Add Product"}
               </Button>
               <Button
-                variant="outlined"
-                fullWidth
-                sx={{ mt: 2 }}
+                variant="raise"
+                sx={{position:'relative' , left:'273px'}} 
                 onClick={() => {
                   setShowForm(false);
                   reset();
@@ -474,9 +529,12 @@ const Products = () => {
             </form>
           </Paper>
         )}
-
-        {/* Product List */}
-        <Grid container spacing={3}>
+        {loading? (
+          <div style={{display:'flex',alignItems:'center',justifyContent:'center',width:'100vw',height:'100vh'}}>
+            <CircularProgress/>
+          </div>
+        ):(
+          <Grid container spacing={3}>
           {products.length > 0 ? (
             products.map((product) => (
               <Grid item key={product.id} xs={12} sm={6} md={4} lg={3}>
@@ -533,16 +591,16 @@ const Products = () => {
                     <Button
                       variant="contained"
                       color="primary"
-                      size="small"
-                      onClick={() => handleEdit(product)}
+                      // size="small"
+                      onClick={(e) => handleEdit(product,e)}
                     >
                       Edit
                     </Button>
                     <Button
                       variant="contained"
                       color="error"
-                      size="small"
-                      onClick={() => handleDelete(product.id)}
+                      // size="small"
+                      onClick={(event) => handleDelete(product.id, event)}
                     >
                       Delete
                     </Button>
@@ -559,6 +617,8 @@ const Products = () => {
             </Typography>
           )}
         </Grid>
+        )
+        }
       </div>
     </ThemeProvider>
   );
