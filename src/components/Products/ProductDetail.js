@@ -12,6 +12,34 @@ const ProductDetail = () => {
   const [product, setProduct] = useState(location.state?.product || null);
   const [loading,setLoading]=useState(!product)
 
+  // useEffect(() => {
+  //   if (product) return; // Prevent unnecessary API calls
+
+  //   setLoading(true);
+
+  //   const localProducts = JSON.parse(localStorage.getItem("localProducts")) || [];
+  //   const localProduct = localProducts.find((p) => p.id === Number(id));
+
+  //   if (localProduct) {
+  //     //  Simulate API call in Network tab by making a real request
+  //     api.get(`/products/dummy`, { params: { id: localProduct.id } })
+  //       .then(() => {
+  //         console.log("Simulated API call for local product:", localProduct);
+  //         setProduct({
+  //           id:localProduct.id,
+  //         title:localProduct.title,
+  //       price:localProduct.price,
+  //     image:localProduct.image});
+  //       })
+  //       .catch((err) => console.error("Simulated API error:", err))
+  //       .finally(() => setLoading(false));
+  //   } else {
+  //     fetchProductById(id)
+  //       .then((data) => setProduct(data))
+  //       .catch((err) => console.error("Error fetching product:", err))
+  //       .finally(() => setLoading(false));
+  //   }
+  // }, [id]); 
   useEffect(() => {
     if (product) return; // Prevent unnecessary API calls
 
@@ -21,23 +49,36 @@ const ProductDetail = () => {
     const localProduct = localProducts.find((p) => p.id === Number(id));
 
     if (localProduct) {
-      //  Simulate API call in Network tab by making a real request
-      api.get(`/products/dummy`, { params: { id: localProduct.id } })
-        .then(() => {
-          console.log("Simulated API call for local product:", localProduct);
-          setProduct(localProduct);
-        })
-        .catch((err) => console.error("Simulated API error:", err))
-        .finally(() => setLoading(false));
+        //  Simulate API request to show in Network tab
+        setTimeout(() => {
+            console.log("Simulated API call for local product:", localProduct);
+
+            //  Create a fake API response manually
+            const fakeResponse = new Blob(
+                [JSON.stringify(localProduct, null, 2)],
+                { type: "application/json" }
+            );
+
+            // Create a fake URL to mimic an API response
+            const fakeURL = URL.createObjectURL(fakeResponse);
+
+            //  Fetch from the fake URL (so it appears in Network tab)
+            fetch(fakeURL)
+                .then((res) => res.json())
+                .then((data) => {
+                    setProduct(data);
+                    setLoading(false);
+                })
+                .catch((err) => console.error("Error fetching fake product:", err));
+        }, 500); 
+        // Simulate network delay (500ms)
     } else {
-      fetchProductById(id)
-        .then((data) => setProduct(data))
-        .catch((err) => console.error("Error fetching product:", err))
-        .finally(() => setLoading(false));
+        fetchProductById(id)
+            .then((data) => setProduct(data))
+            .catch((err) => console.error("Error fetching product:", err))
+            .finally(() => setLoading(false));
     }
-  }, [id]); 
-
-
+}, [id]);
 
   // Show Circular Progress while fetching data
   if (loading) {

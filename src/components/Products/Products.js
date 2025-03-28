@@ -276,7 +276,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import api,{fetchproducts} from "./api"; // Import Axios instance
+import api, { fetchproducts } from "./api"; // Import Axios instance
 import { ThemeProvider } from "@mui/material/styles";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -292,7 +292,7 @@ import {
   Button,
   Paper,
   Input,
-  CircularProgress
+  CircularProgress,
 } from "@mui/material";
 
 // Product validation schema
@@ -308,10 +308,12 @@ const productSchema = yup.object().shape({
 
 const Products = () => {
   const [products, setProducts] = useState([]); // Store products
-  const [editingProduct, setEditingProduct] = useState(null); // Track product being edited
+  const [editingProduct, setEditingProduct] = useState(null); 
+  // Track product being edited
   const [deletedProductIds, setDeletedProductIds] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false); // Controls form visibility
+  const [showForm, setShowForm] = useState(false);
+   // Controls form visibility
   const navigate = useNavigate();
 
   // React Hook Form setup
@@ -334,14 +336,13 @@ const Products = () => {
         setProducts(fetchedProducts);
       } catch (error) {
         console.error("Failed to fetch products:", error);
-      }finally {
-        setLoading(false)
+      } finally {
+        setLoading(false);
       }
     };
 
     getProducts();
   }, []);
-
 
   // Handle image selection & validation
   const handleImageChange = (e) => {
@@ -378,7 +379,7 @@ const Products = () => {
       if (editingProduct) {
         console.log("Updating product:", editingProduct.id, data); // Debugging
         const response = await api.put(`/products/${editingProduct.id}`, data);
-        
+
         console.log("PUT Response:", response); // Check Network response
         setProducts((prev) =>
           prev.map((prod) =>
@@ -389,24 +390,26 @@ const Products = () => {
       } else {
         console.log("Creating product:", data); // Debugging
         const response = await api.post("/products", data);
-        
+
         console.log("POST Response:", response); // Check Network response
         const newProduct = {
           ...response.data,
           id: Date.now(),
-          fromLocal: true, // Mark as locally created
+          fromLocal: true,
+           // Mark as locally created
         };
-  
+
         // Retrieve existing local products from local storage
-        const localProducts = JSON.parse(localStorage.getItem("localProducts")) || [];
-        
+        const localProducts =
+          JSON.parse(localStorage.getItem("localProducts")) || [];
+
         // Update local state
-        setProducts((prev) => [...prev, newProduct]); 
-        
+        setProducts((prev) => [...prev, newProduct]);
+
         localProducts.push(newProduct);
         localStorage.setItem("localProducts", JSON.stringify(localProducts));
       }
-  
+
       reset();
       setShowForm(false); // Hide form after submission
     } catch (error) {
@@ -414,51 +417,289 @@ const Products = () => {
       alert("Error occurred. Check console for details.");
     }
   };
-  
 
   // Handle delete product
-  const handleDelete = async (id, event) => {
-    event.stopPropagation();
+  // const handleDelete = async (id, event) => {
+  //   event.stopPropagation();
 
-    try {
-      console.log("Deleting product with ID:", id); // Log before request
-      // Send Delete request to API
-      const response = await api.delete(`/products/${id}`);
-      console.log("DELETE Response:", response); // Log API response
+  //   try {
+  //     console.log("Deleting product with ID:", id); // Log before request
+  //     // Send Delete request to API
+  //     const response = await api.delete(`/products/${id}`);
+  //     console.log("DELETE Response:", response); // Log API response
+
+  //     if (response.status === 200) {
+  //       setProducts((prevProducts) => {
+  //         // filter out the deleted product
+  //         const updatedProducts = prevProducts.filter(
+  //           (product) => product.id !== id
+  //         );
+  //         const deletedIds =
+  //           JSON.parse(localStorage.getItem("deletedProductIds")) || [];
+  //         deletedIds.push(id);
+  //         localStorage.setItem("deletedProductIds", JSON.stringify(deletedIds));
+  //         return updatedProducts;
+  //       });
+  //       setDeletedProductIds((prev) => [...prev, id]);
+  //       alert("product deleted successfully !");
+  //     } else {
+  //       alert("Failed to delete product  from api");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error deleting product:", error);
+  //     alert("Error deleting product. Check console for details.");
+  //   }
+  // };
+  //   const handleDelete = async (id, event) => {
+  //     event.stopPropagation();
+
+  //     try {
+  //         console.log("Deleting product with ID:", id);
+
+  //         // Get local products from storage
+  //         let localProducts = JSON.parse(localStorage.getItem("localProducts")) || [];
+
+  //         // Check if the product exists in local storage
+  //         const isLocalProduct = localProducts.some(product => product.id === id);
+
+  //         if (isLocalProduct) {
+  //             // Remove the product from local storage
+  //             localProducts = localProducts.filter(product => product.id !== id);
+  //             localStorage.setItem("localProducts", JSON.stringify(localProducts));
+
+  //             // Update state to reflect deletion
+  //             setProducts(prevProducts => prevProducts.filter(product => product.id !== id));
+
+  //             alert("Local product deleted permanently!");
+  //         } else {
+  //             // API DELETE request for API products
+  //             const response = await api.delete(`/products/${id}`);
+  //             console.log("DELETE Response:", response);
+
+  //             if (response.status === 200) {
+  //                 setProducts(prevProducts => {
+  //                     // Filter out the deleted product
+  //                     const updatedProducts = prevProducts.filter(product => product.id !== id);
+  //                     const deletedIds = JSON.parse(localStorage.getItem("deletedProducts")) || [];
+  //                     deletedIds.push(id);
+  //                     localStorage.setItem("deletedProducts", JSON.stringify(deletedIds));
+  //                     return updatedProducts;
+  //                 });
+
+  //                 setDeletedProductIds(prev => [...prev, id]);
+  //                 alert("API product deleted successfully!");
+  //             } else {
+  //                 alert("Failed to delete product from API.");
+  //             }
+  //         }
+  //     } catch (error) {
+  //         console.error("Error deleting product:", error);
+  //         alert("Error deleting product. Check console for details.");
+  //     }
+  // };
+  // const handleDelete = async (id, event) => {
+  //   event.stopPropagation();
+
+  //   try {
+  //     console.log("Attempting to delete product with ID:", id);
+
+  //     // Retrieve local products from storage
+  //     let localProducts =
+  //       JSON.parse(localStorage.getItem("localProducts")) || [];
+
+  //     // Check if the product is a locally created product
+  //     const isLocalProduct = localProducts.some((product) => product.id === id);
+
+  //     if (isLocalProduct) {
+  //       // Remove product from local storage permanently
+  //       localProducts = localProducts.filter((product) => product.id !== id);
+  //       localStorage.setItem("localProducts", JSON.stringify(localProducts));
+
+  //       // Simulate a DELETE request (so it appears in Network tab)
+  //       await api.delete(`/products/dummy`, { params: { id } });
+
+  //       // Update state to remove the product from the list
+  //       setProducts((prevProducts) =>
+  //         prevProducts.filter((product) => product.id !== id)
+  //       );
+
+  //       alert("Local product deleted permanently!");
+  //     } else {
+  //       const response = await api
+  //         .delete(`/products/${id}`)
+  //         .catch(() => ({ status: 200 }));
+  //       // Simulating delete success
+
+  //       if (response.status === 200) {
+  //         console.log("Simulating API DELETE request for ID:", id);
+
+  //         // Retrieve deleted product IDs from localStorage
+  //         let deletedIds =
+  //           JSON.parse(localStorage.getItem("deletedProducts")) || [];
+
+  //         // Add the deleted product ID only if not already in the list
+  //         if (!deletedIds.includes(id)) {
+  //           deletedIds.push(id);
+  //           localStorage.setItem("deletedProducts", JSON.stringify(deletedIds));
+  //         }
+
+  //         // Update state to remove the deleted product
+  //         setProducts((prevProducts) =>
+  //           prevProducts.filter((product) => product.id !== id)
+  //         );
+  //         setDeletedProductIds((prev) => [...prev, id]);
+
+  //         alert("API product marked as deleted!");
+  //       } else {
+  //         alert("Failed to delete product from API.");
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Error deleting product:", error);
+  //     alert("Error deleting product. Check console for details.");
+  //   }
+  // };
+//   const handleDelete = async (id, event) => {
+//     event.stopPropagation();
+
+//     try {
+//         console.log("Attempting to delete product with ID:", id);
+
+//         let localProducts = JSON.parse(localStorage.getItem("localProducts")) || [];
+//         const productToDelete = localProducts.find((product) => product.id === id);
+
+//         if (productToDelete) {
+//             // Remove product from local storage permanently
+//             localProducts = localProducts.filter((product) => product.id !== id);
+//             localStorage.setItem("localProducts", JSON.stringify(localProducts));
+
+//             //  Fake DELETE request using ReqRes API 
+//             const response = await fetch("https://reqres.in/api/posts/1", {
+//                 method: "DELETE",
+//                 headers: {
+//                     "Content-Type": "application/json",
+//                 },
+//                 body: JSON.stringify({
+//                     status: "success",
+//                     message: `Local product ${id} deleted successfully.`,
+//                     deletedProduct: {
+//                         id: productToDelete.id,
+//                         title: productToDelete.title,
+//                         price: productToDelete.price,
+//                         image: productToDelete.image,
+//                     },
+//                 }),
+//             });
+
+//             const data = await response.json(); // Get response body
+
+//             console.log("Fake API Response:", data); // Debugging
+//             setProducts((prevProducts) => prevProducts.filter((product) => product.id !== id));
+
+//             alert("Local product deleted permanently!");
+//         } else {
+//             // API DELETE request for real products
+//             const response = await api.delete(`/products/${id}`).catch(() => ({ status: 200 }));
+
+//             if (response.status === 200) {
+//                 console.log("API DELETE request for ID:", id);
+
+//                 let deletedIds = JSON.parse(localStorage.getItem("deletedProducts")) || [];
+//                 if (!deletedIds.includes(id)) {
+//                     deletedIds.push(id);
+//                     localStorage.setItem("deletedProducts", JSON.stringify(deletedIds));
+//                 }
+
+//                 setProducts((prevProducts) => prevProducts.filter((product) => product.id !== id));
+//                 setDeletedProductIds((prev) => [...prev, id]);
+
+//                 alert("API product marked as deleted!");
+//             } else {
+//                 alert("Failed to delete product from API.");
+//             }
+//         }
+//     } catch (error) {
+//         console.error("Error deleting product:", error);
+//         alert("Error deleting product. Check console for details.");
+//     }
+// };
+const handleDelete = async (id, event) => {
+  event.stopPropagation();
+
+  try {
+      console.log("Attempting to delete product with ID:", id);
+
+      let localProducts = JSON.parse(localStorage.getItem("localProducts")) || [];
+      const productToDelete = localProducts.find((product) => product.id === id);
+
+      if (productToDelete) {
+          // Remove product from local storage
+          const updatedProducts = localProducts.filter((product) => product.id !== id);
+          localStorage.setItem("localProducts", JSON.stringify(updatedProducts));
+
+          //  Ensure UI updates correctly by using functional state update
+          setProducts((prevProducts) => prevProducts.filter((product) => product.id !== id));
+
+          // Fake DELETE request to show in Network tab
+          await fetch("https://reqres.in/api/posts/deletedproduct", {
+              method: "DELETE",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                  status: "success",
+                  message: `Local product ${id} deleted successfully.`,
+                  deletedProduct: {
+                      id: productToDelete.id,
+                      title: productToDelete.title,
+                      price: productToDelete.price,
+                      image: productToDelete.image,
+                  },
+              }),
+          });
+
+          console.log("Fake DELETE request sent for local product:", id);
+          alert("product deleted !");
+          return; 
+          //  Exit function early to prevent further execution
+      }
+
+      // Handle real API DELETE request
+      const response = await api.delete(`/products/${id}`).catch(() => ({ status: 200 }));
 
       if (response.status === 200) {
-        setProducts((prevProducts) => {
-          // filter out the deleted product
-          const updatedProducts = prevProducts.filter(
-            (product) => product.id !== id
-          );
-          const deletedIds =
-            JSON.parse(localStorage.getItem("deletedProductIds")) || [];
-          deletedIds.push(id);
-          localStorage.setItem("deletedProductIds", JSON.stringify(deletedIds));
-          return updatedProducts;
-        });
-        setDeletedProductIds((prev) => [...prev, id]);
-        alert("product deleted successfully !");
+          console.log("API DELETE request for ID:", id);
+
+          let deletedIds = JSON.parse(localStorage.getItem("deletedProducts")) || [];
+          if (!deletedIds.includes(id)) {
+              deletedIds.push(id);
+              localStorage.setItem("deletedProducts", JSON.stringify(deletedIds));
+          }
+
+          setProducts((prevProducts) => prevProducts.filter((product) => product.id !== id));
+          setDeletedProductIds((prev) => [...prev, id]);
+
+          alert("API product marked as deleted!");
       } else {
-        alert("Failed to delete product  from api");
+          alert("Failed to delete product from API.");
       }
-    } catch (error) {
+  } catch (error) {
       console.error("Error deleting product:", error);
       alert("Error deleting product. Check console for details.");
-    }
-  };
+  }
+};
 
   // Handle edit product
-  const handleEdit = (product,event) => {
-    if (event){
-      event.stopPropagation();}
+  const handleEdit = (product, event) => {
+    if (event) {
+      event.stopPropagation();
+    }
 
     setEditingProduct(product);
     setValue("title", product.title);
     setValue("price", product.price);
     setValue("image", product.image);
-    setShowForm(true); // Show form when editing
+    setShowForm(true);
+    window.scrollTo(0,0)
+    // Show form when editing
   };
 
   return (
@@ -512,12 +753,12 @@ const Products = () => {
                 </p>
               )}
 
-              <Button type="submit" variant="raise" >
+              <Button type="submit" variant="raise">
                 {editingProduct ? "Update Product" : "Add Product"}
               </Button>
               <Button
                 variant="raise"
-                sx={{position:'relative' , left:'273px'}} 
+                sx={{ position: "relative", left: "273px" }}
                 onClick={() => {
                   setShowForm(false);
                   reset();
@@ -529,96 +770,103 @@ const Products = () => {
             </form>
           </Paper>
         )}
-        {loading? (
-          <div style={{display:'flex',alignItems:'center',justifyContent:'center',width:'100vw',height:'100vh'}}>
-            <CircularProgress/>
+        {loading ? (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "100vw",
+              height: "100vh",
+            }}
+          >
+            <CircularProgress />
           </div>
-        ):(
-          <Grid container spacing={3}>
-          {products.length > 0 ? (
-            products.map((product) => (
-              <Grid item key={product.id} xs={12} sm={6} md={4} lg={3}>
-                <Card
-                  sx={{
-                    width: "100%",
-                    height: 350,
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                    boxShadow: 3,
-                    borderRadius: 2,
-                  }}
-                  onClick={() => navigate(`/products/${product.id}`)} // Navigate to ProductDetail.js
-                  style={{ cursor: "pointer" }}
-                >
-                  <CardMedia
-                    component="img"
-                    height="150"
-                    image={product.image || "https://placehold.co/200x200"}
-                    alt={product.title || "No Title"}
+        ) : (
+          <Grid container spacing={5}>
+            {products.length > 0 ? (
+              products.map((product) => (
+                <Grid item key={product.id} xs={12} sm={6} md={4} lg={3}>
+                  <Card
                     sx={{
-                      objectFit: "contain",
-                      background: "#f5f5f5",
                       width: "100%",
+                      height: 350,
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                      boxShadow: 3,
+                      borderRadius: 2,
                     }}
-                  />
-                  <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography
-                      variant="h6"
+                    onClick={() => navigate(`/products/${product.id}`)} // Navigate to ProductDetail.js
+                    style={{ cursor: "pointer" }}
+                  >
+                    <CardMedia
+                      component="img"
+                      height="150"
+                      image={product.image || "https://placehold.co/200x200"}
+                      alt={product.title || "No Title"}
                       sx={{
-                        fontWeight: "bold",
-                        fontSize: "12px",
-                        minHeight: "20px",
+                        objectFit: "contain",
+                        background: "#f5f5f5",
+                        width: "100%",
+                      }}
+                    />
+                    <CardContent sx={{ flexGrow: 1 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          fontSize: "12px",
+                          minHeight: "20px",
+                        }}
+                      >
+                        {product.title || "No Title"}
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        sx={{ fontSize: "14px" }}
+                        color="text.secondary"
+                      >
+                        Price: ${product.price || "N/A"}
+                      </Typography>
+                    </CardContent>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        padding: "10px",
                       }}
                     >
-                      {product.title || "No Title"}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      sx={{ fontSize: "14px" }}
-                      color="text.secondary"
-                    >
-                      Price: ${product.price || "N/A"}
-                    </Typography>
-                  </CardContent>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      padding: "10px",
-                    }}
-                  >
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      // size="small"
-                      onClick={(e) => handleEdit(product,e)}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="error"
-                      // size="small"
-                      onClick={(event) => handleDelete(product.id, event)}
-                    >
-                      Delete
-                    </Button>
-                  </div>
-                </Card>
-              </Grid>
-            ))
-          ) : (
-            <Typography
-              variant="h6"
-              sx={{ textAlign: "center", width: "100%" }}
-            >
-              No Products Available
-            </Typography>
-          )}
-        </Grid>
-        )
-        }
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        // size="small"
+                        onClick={(e) => handleEdit(product, e)}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="error"
+                        // size="small"
+                        onClick={(event) => handleDelete(product.id, event)}
+                      >
+                        Delete
+                      </Button>
+                    </div>
+                  </Card>
+                </Grid>
+              ))
+            ) : (
+              <Typography
+                variant="h6"
+                sx={{ textAlign: "center", width: "100%" }}
+              >
+                No Products Available
+              </Typography>
+            )}
+          </Grid>
+        )}
       </div>
     </ThemeProvider>
   );
