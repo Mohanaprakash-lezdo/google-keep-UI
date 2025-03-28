@@ -1217,7 +1217,9 @@ import SignIn from './Pages/Signin/Sign';
 import SignUp from './Pages/SignUp/SignUp';
 import { signOut } from './features/authSlice';
 import NoteList from "./components/NoteList/NoteList";
-// just 
+import Products from "./components/Products/Products";
+import ProductDetail from "./components/Products/ProductDetail";
+
 function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -1253,7 +1255,9 @@ function App() {
   const isTrash = location.pathname === '/Trash';
   const isArchive = location.pathname === '/Archive';
   const isHome = location.pathname === '/';
-
+  // const isProductsPage =location.pathname==='/products';
+  // const isProductsDetailPage=location.pathname.startsWith('/products/')
+ 
   const closeModal = () => {
     setIsModalOpen(false);
     navigate('/');
@@ -1268,23 +1272,22 @@ function App() {
     }
   };
 
-  // ✅ Auto-logout after 5 minutes of inactivity
-  useEffect(() => {
-    if (isAuthenticated) {
-      const timeout = setTimeout(() => {
-        alert("Session timed out. Please sign in again.");
-        dispatch(signOut());
-      }, 300000); // 5 minutes
+  const [isProductsPage, setIsProductsPage] = useState(location.pathname.startsWith('/products'));
 
-      return () => clearTimeout(timeout); // Clear timeout on component unmount
-    }
-  }, [isAuthenticated, dispatch]);
+useEffect(() => {
+  setIsProductsPage(location.pathname.startsWith('/products'));
+}, [location.pathname]);
+
+  
 
   return (
     <div className="App">
-      {!["/signin", "/signup"].includes(location.pathname) && <Header />}
+      {/* Header hide */}
+      {!["/signin", "/signup"].includes(location.pathname) && !isProductsPage && <Header />}
+      
+      {/* Siderbar hide */}
       <div className="main-content">
-        {isAuthenticated && <Layout labels={labels} openModal={() => setIsModalOpen(true)} />}
+        {!isProductsPage && isAuthenticated && <Layout labels={labels} openModal={() => setIsModalOpen(true)} />}
 
         <Routes>
           <Route path="/signin" element={<AuthLayout><SignIn /></AuthLayout>} />
@@ -1299,6 +1302,8 @@ function App() {
               <Route path="/note/:id" element={<NoteList notes={filteredNotes} editNote={(id, updatedNote) => dispatch(editNote({ userId, id, ...updatedNote }))} />} />
               <Route path="/label/:labelName" element={<LabelNotes notes={filteredNotes} />} />
               <Route path="/edit-labels" element={<EditLabel labels={labels} addLabel={(label) => dispatch(addLabel({ userId, label }))} deleteLabel={(label) => dispatch(deleteLabel({ userId, label }))} closeModal={closeModal} />} />
+              <Route path='/products' element={<Products/>}></Route>
+              <Route path='/products/:id' element={<ProductDetail/>}></Route>
             </>
           ) : (
             <Route path="*" element={<Navigate to="/signin" />} />
